@@ -12,8 +12,6 @@ java -jar kmeans-1.0-SNAPSHOT.jar <path-to-input-file>
 
 
 
-
-
 ## Cleanup
 
 bin/hadoop fs -rmr output kmeans
