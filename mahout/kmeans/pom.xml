@@ -66,6 +66,18 @@
       </descriptorRefs>
     </configuration>
   </plugin>  
+  <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-jar-plugin</artifactId>
+         <configuration>
+       <archive>
+         <manifest>
+           <mainClass>com.drelu.SimpleKMeansClustering</mainClass>
+           <packageName>com.drelu</packageName>
+         </manifest>         
+       </archive>
+         </configuration>
+     </plugin>
   </plugins>
   </build>
 </project>
