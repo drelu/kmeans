@@ -18,6 +18,8 @@ import org.apache.mahout.clustering.classify.WeightedVectorWritable;
 import org.apache.mahout.clustering.kmeans.KMeansDriver;
 //import org.apache.mahout.clustering.WeightedVectorWritable;
 import org.apache.mahout.clustering.kmeans.Kluster;
+import org.apache.mahout.clustering.kmeans.RandomSeedGenerator;
+import org.apache.mahout.common.commandline.DefaultOptionCreator;
 import org.apache.mahout.common.distance.EuclideanDistanceMeasure;
 import org.apache.mahout.math.RandomAccessSparseVector;
 import org.apache.mahout.math.Vector;
@@ -77,6 +79,46 @@ public class SimpleKMeansClustering {
 		return points;
 	}
 
+	public static void processData(String inputFilename, String outputFilename,  FileSystem fs, Configuration conf) throws IOException{
+		System.out.println("Read points from: " + inputFilename);
+		Path path = new Path(outputFilename);
+		SequenceFile.Writer writer = new SequenceFile.Writer(fs, conf,
+				path, DoubleWritable.class, VectorWritable.class);
+		long recNum = 0;
+		//VectorWritable vecWritable = new VectorWritable();
+		
+		//List<Vector> points = new ArrayList<Vector>();
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader(inputFilename));
+			String line = br.readLine();
+			while (line != null) {
+				String components[] = line.split(",");
+				//double fr[] = new double[components.length];
+				double fr[] = new double[2];
+				for (int i=0; i<2; i++){
+					fr[i]=Double.parseDouble(components[i]);
+				}
+				Vector vec = new RandomAccessSparseVector(fr.length);
+				vec.assign(fr);
+				VectorWritable vecWritable = new VectorWritable();
+				vecWritable.set(vec);
+				writer.append(new DoubleWritable(recNum++), vecWritable);
+				line = br.readLine();
+			}
+		
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally {
+			try {
+				writer.close();
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}		
+	}
 
 	public static void main(String args[]) throws Exception {
 		int k = 2;
@@ -85,7 +127,7 @@ public class SimpleKMeansClustering {
 			System.out.println("Usage: java -jar kmeans-1.0-SNAPSHOT.jar <path-to-input-file>");
 
 		}
-		List<Vector> vectors = getPoints(args[0]);
+		//List<Vector> vectors = getPoints(args[0]);
 
 		//		File testData = new File("testdata");
 		//		if (!testData.exists()) {
@@ -101,23 +143,30 @@ public class SimpleKMeansClustering {
 		long startTime = System.currentTimeMillis();		
 		Configuration conf = new Configuration();
 		FileSystem fs = FileSystem.get(conf);
-		writePointsToFile(vectors, "kmeans/points/file1", fs, conf);
+		processData(args[0], "kmeans/points/file1", fs, conf);
+		//writePointsToFile(vectors, "kmeans/points/file1", fs, conf);
 
-		Path path = new Path("kmeans/clusters/part-00000");
-		SequenceFile.Writer writer = new SequenceFile.Writer(fs, conf,
-				path, Text.class, Kluster.class);
-		for (int i = 0; i < k; i++) {
-			Vector vec = vectors.get(i);
-			Kluster cluster = new Kluster(vec, i, new EuclideanDistanceMeasure());
-			writer.append(new Text(cluster.getIdentifier()), cluster);
-		}
-		writer.close();
-
+//		Path path = new Path("kmeans/clusters/part-00000");
+//		
+//	   // Kluster clusters = RandomSeedGenerator.buildRandom(getConf(), input, clusters,
+//	   //           Integer.parseInt(getOption(DefaultOptionCreator.NUM_CLUSTERS_OPTION)), measure);
+//		
+//		
+//		SequenceFile.Writer writer = new SequenceFile.Writer(fs, conf,
+//				path, Text.class, Kluster.class);
+//		
+//		
+//		for (int i = 0; i < k; i++) {
+//			Vector vec = vectors.get(i);
+//			Kluster cluster = new Kluster(vec, i, new EuclideanDistanceMeasure());
+//			writer.append(new Text(cluster.getIdentifier()), cluster);
+//		}
+//		writer.close();
 		long endHDFSTime = System.currentTimeMillis();
 		
-		KMeansDriver.run(conf, new Path("kmeans/points"), new Path("kmeans/clusters"),
-				new Path("output"), new EuclideanDistanceMeasure(), 0.001, 10,
-				true, 0.0, false);
+//		KMeansDriver.run(conf, new Path("kmeans/points"), new Path("kmeans/clusters"),
+//				new Path("output"), new EuclideanDistanceMeasure(), 0.001, 10,
+//				true, 0.0, false);
 		//		
 		//KMeansDriver.runJob("testdata", "output/clusters-0", "output",
 		//		EuclideanDistanceMeasure.class.getName(), "0.001", "10", true);
