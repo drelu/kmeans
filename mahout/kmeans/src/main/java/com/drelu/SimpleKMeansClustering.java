@@ -97,6 +97,8 @@ public class SimpleKMeansClustering {
 		//			testData.mkdir();
 		//		}
 
+		
+		long startTime = System.currentTimeMillis();		
 		Configuration conf = new Configuration();
 		FileSystem fs = FileSystem.get(conf);
 		writePointsToFile(vectors, "kmeans/points/file1", fs, conf);
@@ -104,7 +106,6 @@ public class SimpleKMeansClustering {
 		Path path = new Path("kmeans/clusters/part-00000");
 		SequenceFile.Writer writer = new SequenceFile.Writer(fs, conf,
 				path, Text.class, Kluster.class);
-
 		for (int i = 0; i < k; i++) {
 			Vector vec = vectors.get(i);
 			Kluster cluster = new Kluster(vec, i, new EuclideanDistanceMeasure());
@@ -112,6 +113,8 @@ public class SimpleKMeansClustering {
 		}
 		writer.close();
 
+		long endHDFSTime = System.currentTimeMillis();
+		
 		KMeansDriver.run(conf, new Path("kmeans/points"), new Path("kmeans/clusters"),
 				new Path("output"), new EuclideanDistanceMeasure(), 0.001, 10,
 				true, 0.0, false);
@@ -120,17 +123,21 @@ public class SimpleKMeansClustering {
 		//		EuclideanDistanceMeasure.class.getName(), "0.001", "10", true);
 
 
-		SequenceFile.Reader reader = new SequenceFile.Reader(fs,
-				new Path("output/" + Kluster.CLUSTERED_POINTS_DIR
-						+ "/part-m-00000"), conf);
-
-		IntWritable key = new IntWritable();
-		WeightedVectorWritable value = new WeightedVectorWritable();
-		while (reader.next(key, value)) {
-			System.out.println(value.toString() + " belongs to cluster "
-					+ key.toString());
-		}
-		reader.close();
+		long endTime = System.currentTimeMillis();
+		
+		System.out.println("HDFS Upload: " + (endHDFSTime-startTime) + "; KMeans Runtime: " + (endTime - endHDFSTime));
+		
+//		SequenceFile.Reader reader = new SequenceFile.Reader(fs,
+//				new Path("output/" + Kluster.CLUSTERED_POINTS_DIR
+//						+ "/part-m-00000"), conf);
+//
+//		IntWritable key = new IntWritable();
+//		WeightedVectorWritable value = new WeightedVectorWritable();
+//		while (reader.next(key, value)) {
+//			System.out.println(value.toString() + " belongs to cluster "
+//					+ key.toString());
+//		}
+//		reader.close();
 	}
 
 }
