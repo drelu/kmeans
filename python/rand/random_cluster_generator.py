@@ -7,7 +7,6 @@ NUMBER_POINTS_PER_CLUSTER=6710886.4
 
 OUTPUT_FILE="random_data.csv"
 
-
 np.random.seed(seed=1234567)     
 
 centers = 10 * np.random.rand(NUMBER_CLUSTERS, 2)
