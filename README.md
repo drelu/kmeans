@@ -28,17 +28,19 @@ Mount EBS
 
 Upload Data to HDFS:
 
-    java -jar /data/kmeans/mahout/kmeans/target/kmeans-1.0-SNAPSHOT-jar-with-dependencies.jar /data/kmeans/data/1GB.csv 
+    export CLASSPATH=$CLASSPATH:/home/hadoop/conf/
+    export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/home/hadoop/conf/
+    export HADOOP_CONF_DIR=/home/hadoop/conf/
+
+    Hadoop -jar /data/kmeans/mahout/kmeans/target/kmeans-1.0-SNAPSHOT-jar-with-dependencies.jar /data/kmeans/data/1GB.csv 
 
 Run Mahout Kmeans:
 
-     export CLASSPATH=$CLASSPATH:/home/hadoop/conf/
-     export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/home/hadoop/conf/
-     export HADOOP_CONF_DIR=/home/hadoop/conf/
-     java -jar /data/kmeans/mahout/kmeans/target/kmeans-1.0-SNAPSHOT-jar-with-dependencies.jar /data/kmeans/data/1GB.csv 
+   /data/bin/mahout-distribution-0.8/bin/mahout kmeans --input /user/hadoop/kmeans/points/ --output /user/hadoop/kmeans/output --clusters /user/hadoop/kmeans/clusters --numClusters 5 --overwrite --outlierThreshold 0 --distanceMeasure org.apache.mahout.common.distance.EuclideanDistanceMeasure --maxIter 10  
 
 
 ## TODO
 
 *Spark
 *Twister
+
