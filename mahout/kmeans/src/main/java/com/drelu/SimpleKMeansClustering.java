@@ -114,8 +114,8 @@ public class SimpleKMeansClustering {
 	public static void main(String args[]) throws Exception {
 		int k = 2;
 
-		if (args.length<1){
-			System.out.println("Usage: java -jar kmeans-1.0-SNAPSHOT.jar <path-to-input-file>");
+		if (args.length<2){
+			System.out.println("Usage: java -jar kmeans-1.0-SNAPSHOT.jar <path-to-input-file> <path-to-output-file");
 
 		}
 		//List<Vector> vectors = getPoints(args[0]);
@@ -134,7 +134,7 @@ public class SimpleKMeansClustering {
 		long startTime = System.currentTimeMillis();		
 		Configuration conf = new Configuration();
 		FileSystem fs = FileSystem.get(conf);
-		processData(args[0], "kmeans/points/file1", fs, conf);
+		processData(args[0], args[1], fs, conf);
 		//writePointsToFile(vectors, "kmeans/points/file1", fs, conf);
 
 //		Path path = new Path("kmeans/clusters/part-00000");

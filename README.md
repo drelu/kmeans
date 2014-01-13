@@ -32,7 +32,7 @@ Upload Data to HDFS:
     export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/home/hadoop/conf/
     export HADOOP_CONF_DIR=/home/hadoop/conf/
 
-    Hadoop -jar /data/kmeans/mahout/kmeans/target/kmeans-1.0-SNAPSHOT-jar-with-dependencies.jar /data/kmeans/data/1GB.csv 
+    hadoop -jar /data/kmeans/mahout/kmeans/target/kmeans-1.0-SNAPSHOT-jar-with-dependencies.jar /data/kmeans/data/1GB.csv 
 
 Run Mahout Kmeans:
 
