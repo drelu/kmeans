@@ -109,11 +109,11 @@ JOB_TYPES = ["YARN"]
 #JOB_TYPES = ["SP-SSH"]
 #JOB_TYPES = ["XSEDE-SSH"]
 RESULT_DIR="results"
-RESULT_FILE_PREFIX="pd-"
+RESULT_FILE_PREFIX="pilotstartup-"
 HEADER = ("Run", "PC", "PD", "Number jobs", "Read File Size", "Timestamp", "Time Type", "Time")
 HEADER_CSV = ("%s;%s;%s;%s;%s;%s;%s;%s\n"%HEADER)
 HEADER_TAB = ("%s\t%s\t\t%s\t%s\t%s\t%s\t%s\t%s"%HEADER)
-NUMBER_REPEATS=1
+NUMBER_REPEATS=10
 FILEPATH=os.path.join(os.getcwd(), "data/file.txt")
 BWA_DATA_DIR="/home/luckow/data/bwa"
 SIZE=1024
@@ -146,7 +146,7 @@ def start_pilot(job, pilot):
         pilot_compute_description["project"]=job["project"][pilot]
     print(str(pilot_compute_description)) 
     pj = pilot_compute_service.create_pilot(pilot_compute_description=pilot_compute_description)
-
+    return pj
 
 def test_pilotdata(job, run_id, size=1):
     start_time = time.time()
@@ -157,13 +157,25 @@ def test_pilotdata(job, run_id, size=1):
     lrms_compute = str(job["pilot_compute_url"])
     lrms_data = str(job["pilot_data_url"])
     
-
+    result_tuple = (run_id, lrms_compute, lrms_data, number_jobs, size, datetime.datetime.today().isoformat(),str(job["number_pilots"]))
+            
     pilotjobs = []
     logger.debug("*******************************************************************************************")
     logger.debug("Start %d pilots."%(job["number_pilots"]*len(job["pilot_compute_url"])))
     for i in range(0, job["number_pilots"]):
         for pilot in range(0, len(job["pilot_compute_url"])):
-            start_pilot(job, pilot)
+            pj = start_pilot(job, pilot)
+            submission_time = time.time() - start_time
+            pilot_startup_begin = time.time()
+            submission_time_tuple = result_tuple + ("Pilot Submission Time", str(submission_time))
+            time_log.append("%s;%s;%s;%s;%s;%s;%s;%s;%s\n"%(submission_time_tuple))  
+            pj.wait()
+            pilot_startup_time = time.time() - pilot_startup_begin
+            pilot_startup_time_tuple = result_tuple + ("Pilot Startup Time", str(pilot_startup_time))
+            time_log.append("%s;%s;%s;%s;%s;%s;%s;%s;%s\n"%(pilot_startup_time_tuple))
+    
+    
+    logger.debug("Started %d pilots"%len(pilotjobs))
     
 #     pj_startup_threads=[]
 #     for i in range(0, job["number_pilots"]):
@@ -176,10 +188,10 @@ def test_pilotdata(job, run_id, size=1):
 #         t.join()
 
     logger.debug("Started %d pilots"%len(pilotjobs))
-    result_tuple = (run_id, lrms_compute, lrms_data, number_jobs, size, datetime.datetime.today().isoformat(),str(job["number_pilots"]))
-    all_pilots_active = time.time() - start_time
-    all_pilots_active_tuple = result_tuple+ ("Pilot Submission Time", str(all_pilots_active))
-    time_log.append("%s;%s;%s;%s;%s;%s;%s;%s;%s\n"%(all_pilots_active_tuple))       
+    #result_tuple = (run_id, lrms_compute, lrms_data, number_jobs, size, datetime.datetime.today().isoformat(),str(job["number_pilots"]))
+    #all_pilots_active = time.time() - start_time
+    #all_pilots_active_tuple = result_tuple+ ("Pilot Submission Time", str(all_pilots_active))
+    #time_log.append("%s;%s;%s;%s;%s;%s;%s;%s;%s\n"%(all_pilots_active_tuple))       
         
     logger.info("Terminate Pilot Compute/Data Service")
     pilot_compute_service.cancel()
@@ -205,22 +217,21 @@ if __name__ == "__main__":
             #for np in [1,2,4,8,16,32,48]:
             #for np in [48]:
             #for np in [1,2,4,8,16,32]:
-            for np in [10]:
-                try:
-                    jobs_copy[t]["number_pilots"]=np                    
-                    print "Run with %d pilots"%int(jobs_copy[t]["number_pilots"])
-                    result = test_pilotdata(jobs_copy[t], run_id=i, size=SIZE)
-                    f.writelines(result)
-                    f.flush()
-                except:
-                    exc_type, exc_value, exc_traceback = sys.exc_info()
-                    print "Run " +str(i) + " failed: " + str(exc_value)
-                    print "*** print_tb:"
-                    traceback.print_tb(exc_traceback, limit=1, file=sys.stderr)
-                    print "*** print_exception:"
-                    traceback.print_exception(exc_type, exc_value, exc_traceback,
-                                               limit=2, file=sys.stderr)
-                time.sleep(5)
+            try:
+                jobs_copy[t]["number_pilots"]=1                    
+                print "Run with %d pilots"%int(jobs_copy[t]["number_pilots"])
+                result = test_pilotdata(jobs_copy[t], run_id=i, size=SIZE)
+                f.writelines(result)
+                f.flush()
+            except:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print "Run " +str(i) + " failed: " + str(exc_value)
+                print "*** print_tb:"
+                traceback.print_tb(exc_traceback, limit=1, file=sys.stderr)
+                print "*** print_exception:"
+                traceback.print_exception(exc_type, exc_value, exc_traceback,
+                                           limit=2, file=sys.stderr)
+            time.sleep(5)
 
     f.close()
     print("Finished run")
