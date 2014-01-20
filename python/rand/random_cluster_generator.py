@@ -4,7 +4,7 @@ import numpy as np
 NUMBER_CLUSTERS=5
 NUMBER_POINTS_PER_CLUSTER=6710886.4
 
-for n in range(5,8):
+for n in range(0,1):
     number_points = NUMBER_POINTS_PER_CLUSTER*NUMBER_CLUSTERS*(2**n)
     OUTPUT_FILE="random_data_%.1fGB.csv"%((number_points*32.0)/(1024*1024*1024))
     print "Number points: %d Generate: %s"%(number_points, OUTPUT_FILE)
@@ -21,7 +21,7 @@ for n in range(5,8):
         
         print "Cluster %d: %s"%(i,str(data))
         for d in data:
-            f.write(str(d[0]) +"," + str(d[1]) +"," + str(i) + "\n")
-        
+            #f.write(str(d[0]) +"," + str(d[1]) +"," + str(i) + "\n")
+            f.write(str(d[0]) +"," + str(d[1]) +"\n")
         
     f.close()

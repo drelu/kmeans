@@ -23,7 +23,14 @@ Format (initially)
 Mount EBS
     
     mkdir /data
-    mount /dev/sdf /data
+
+Ubuntu:
+    
+        mount /dev/sdf /data
+
+CentOS:
+
+        mount -t ext4 /dev/xvdf /data
 
 
 Upload Data to HDFS:
@@ -36,7 +43,7 @@ Upload Data to HDFS:
 
 Run Mahout Kmeans:
 
-   /data/bin/mahout-distribution-0.8/bin/mahout kmeans --input /user/hadoop/kmeans/points/ --output /user/hadoop/kmeans/output --clusters /user/hadoop/kmeans/clusters --numClusters 5 --overwrite --outlierThreshold 0 --distanceMeasure org.apache.mahout.common.distance.EuclideanDistanceMeasure --maxIter 10  
+    /data/bin/mahout-distribution-0.8/bin/mahout kmeans --input /user/hadoop/kmeans/points/ --output /user/hadoop/kmeans/output --clusters /user/hadoop/kmeans/clusters --numClusters 5 --overwrite --outlierThreshold 0 --distanceMeasure org.apache.mahout.common.distance.EuclideanDistanceMeasure --maxIter 10  
 
 
 ## TODO
