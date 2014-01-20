@@ -79,8 +79,18 @@ JOBS = {
                   "project": ["", ""],
                   "walltime": ["60", "60"] 
                 } ,       
-        
-         "AWS":  { 
+        "MESOS":  { 
+                  "pilot_compute_url":["mesos://localhost:5050"],
+                  "pilot_data_url":"ssh://localhost/pilot-data-" + str(uuid.uuid1()),
+                  "number_of_processes" : [1],
+                  "processes_per_node": [1],
+                  "number_pilots": 1,
+                  "number_subjobs" : 1,
+                  "queue": ["normal", "short"],
+                  "project": ["", ""],
+                  "walltime": ["60", "60"] 
+                } , 
+        "AWS":  { 
                   "pilot_compute_url":["ec2+ssh://aws.amazon.com/"],
                   "pilot_data_url":"s3://pilot-data-" + str(uuid.uuid1()),
                   "access_key_id": "AKIAJPGNDJRYIG5LIEUA", # in ~/.boto
@@ -168,7 +178,16 @@ def test_pilotdata(job, run_id, size=1):
             submission_time = time.time() - start_time
             pilot_startup_begin = time.time()
             submission_time_tuple = result_tuple + ("Pilot Submission Time", str(submission_time))
-            time_log.append("%s;%s;%s;%s;%s;%s;%s;%s;%s\n"%(submission_time_tuple))  
+            time_log.append("%s;%s;%s;%s;%s;%s;%s;%s;%s\n"%(submission_time_tuple))
+            compute_unit_description = {
+                "executable": "/bin/date",
+                "arguments": [],
+                "number_of_processes": 1,
+                "output": "stdout.txt",
+                "error": "stderr.txt"
+            }    
+            compute_unit = pj.submit_compute_unit(compute_unit_description)
+            compute_unit.wait()  
             pj.wait()
             pilot_startup_time = time.time() - pilot_startup_begin
             pilot_startup_time_tuple = result_tuple + ("Pilot Startup Time", str(pilot_startup_time))
@@ -235,5 +254,5 @@ if __name__ == "__main__":
 
     f.close()
     print("Finished run")
-    os.system("ssh tg804093@login2.ls4.tacc.utexas.edu  pkill -u tg804093")
+    #os.system("ssh tg804093@login2.ls4.tacc.utexas.edu  pkill -u tg804093")
     #os.remove(FILEPATH)
