@@ -68,6 +68,17 @@ JOBS = {
                   "project": ["TG-MCB090174"],
                   "walltime": ["10", "120"] 
                 } ,
+        "YARN-EMR":  { 
+                  "pilot_compute_url":["yarn://"+ socket.gethostbyname(socket.gethostname())+":9026?fs=hdfs://"+socket.gethostbyname(socket.gethostname())+ ":9101"],
+                  "pilot_data_url":"ssh://localhost/pilot-data-" + str(uuid.uuid1()),
+                  "number_of_processes" : [1],
+                  "processes_per_node": [1],
+                  "number_pilots": 1,
+                  "number_subjobs" : 1,
+                  "queue": ["normal", "short"],
+                  "project": ["", ""],
+                  "walltime": ["60", "60"] 
+                } ,       
         "YARN":  { 
                   "pilot_compute_url":["yarn://localhost:8032?fs=hdfs://localhost:9000/"],
                   "pilot_data_url":"ssh://localhost/pilot-data-" + str(uuid.uuid1()),
@@ -115,7 +126,7 @@ JOBS = {
 
 
 
-JOB_TYPES = ["YARN"]
+JOB_TYPES = ["YARN-EMR"]
 #JOB_TYPES = ["SP-SSH"]
 #JOB_TYPES = ["XSEDE-SSH"]
 RESULT_DIR="results"
