@@ -58,12 +58,11 @@ JOBS = {
                   "pilot_data_url":"ssh://tg804093@login1.stampede.tacc.utexas.edu/work/01131/tg804093/pilot-data",
                   # ref data + 1 read file
                   #"data_unit_url":"redis://gw68.quarry.iu.teragrid.org/bigdata:du-a5d732dc-9400-11e2-bb25-5254002792d2",
-                  "data_unit_url":"redis://gw68.quarry.iu.teragrid.org/bigdata:du-ebb8e76c-9cfe-11e2-b226-5254002792d2",
                   "working_directory" : ["/scratch/01131/tg804093/pilot-compute", "/work/01131/tg804093/pilot-compute"],
                   "number_of_processes" : [16],
                   "processes_per_node": [16],
                   "number_pilots": 1,
-                  "number_subjobs" : 1024,
+                  "number_subjobs" : 1,
                   "queue": ["normal", "normal"],
                   "project": ["TG-MCB090174"],
                   "walltime": ["10", "120"] 
@@ -126,7 +125,7 @@ JOBS = {
 
 
 
-JOB_TYPES = ["YARN-EMR"]
+JOB_TYPES = ["SP-SSH"]
 #JOB_TYPES = ["SP-SSH"]
 #JOB_TYPES = ["XSEDE-SSH"]
 RESULT_DIR="results"
