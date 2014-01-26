@@ -11,7 +11,7 @@ public class RandomData {
 
 	public final static int dimensions = 3;
 	// Scenario 1
-	public final static long numOfPointsPerFile = 100000000l * 500l;
+	//public final static long numOfPointsPerFile = 100000000l * 500l;
 	
 	// Scenario 2
 	//public final static long numOfPointsPerFile = 10000 * 5000;
@@ -19,6 +19,8 @@ public class RandomData {
 	// Scenario 3
 	//public final static long numOfPointsPerFile = 1 * 500000;
 	
+	// Scenario 4 (tiny)
+	public final static long numOfPointsPerFile = 1 * 5000;
 	
 
 	public static void main(String[] args) {
