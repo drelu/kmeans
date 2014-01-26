@@ -41,7 +41,7 @@ public class SimpleKMeansClustering {
 	
 
 	public static List<Vector> getPoints(String filename) {
-		System.out.println("Read points from: " + filename);
+		System.out.println("Read points from: " + filename + " Number Dimension: " + NUMBER_DIMENSION);
 		List<Vector> points = new ArrayList<Vector>();
 		BufferedReader br = null;
 		try {
