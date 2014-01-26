@@ -20,6 +20,8 @@ public class SimpleKMeansClustering {
 	public static final double[][] points = { {1.1, 1}, {2, 1}, {1, 2},
 		{2, 2}, {3, 3}, {8, 8},
 		{9, 8}, {8, 9}, {9, 9}};
+	
+	public static final int NUMBER_DIMENSION = 3;
 
 	public static void writePointsToFile(List<Vector> points,
 			String fileName,
@@ -36,6 +38,7 @@ public class SimpleKMeansClustering {
 		}
 		writer.close();
 	}
+	
 
 	public static List<Vector> getPoints(String filename) {
 		System.out.println("Read points from: " + filename);
@@ -47,8 +50,8 @@ public class SimpleKMeansClustering {
 			while (line != null) {
 				String components[] = line.split(",");
 				//double fr[] = new double[components.length];
-				double fr[] = new double[2];
-				for (int i=0; i<2; i++){
+				double fr[] = new double[NUMBER_DIMENSION];
+				for (int i=0; i<NUMBER_DIMENSION; i++){
 					fr[i]=Double.parseDouble(components[i]);
 				}
 				Vector vec = new RandomAccessSparseVector(fr.length);
