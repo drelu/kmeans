@@ -12,6 +12,7 @@ import threading
 from pilot import PilotComputeService, PilotDataService, ComputeDataService, ComputeDataServiceDecentral, State, DataUnit
 from bigjob import logger 
 from email.header import Header
+import socket
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -68,7 +69,7 @@ JOBS = {
                   "walltime": ["10", "120"] 
                 } ,
         "YARN-EMR":  { 
-                  "pilot_compute_url":["yarn://"+ socket.gethostbyname(socket.gethostname())+":9026?fs=hdfs://"+socket.gethostbyname(socket.gethostname())+ ":9101"],
+                  "pilot_compute_url":["yarn://"+ socket.gethostbyname(socket.gethostname())+":9022?fs=hdfs://"+socket.gethostbyname(socket.gethostname())+ ":9000"],
                   "pilot_data_url":"ssh://localhost/pilot-data-" + str(uuid.uuid1()),
                   "number_of_processes" : [1],
                   "processes_per_node": [1],
