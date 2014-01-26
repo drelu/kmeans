@@ -74,7 +74,7 @@ public class SimpleKMeansClustering {
 	}
 
 	public static void processData(String inputFilename, String outputFilename,  FileSystem fs, Configuration conf) throws IOException{
-		System.out.println("Read points from: " + inputFilename);
+		System.out.println("Read points from: " + inputFilename + " Number Dimension: " + NUMBER_DIMENSION);
 		Path path = new Path(outputFilename);
 		SequenceFile.Writer writer = new SequenceFile.Writer(fs, conf,
 				path, DoubleWritable.class, VectorWritable.class);
@@ -89,8 +89,8 @@ public class SimpleKMeansClustering {
 			while (line != null) {
 				String components[] = line.split(",");
 				//double fr[] = new double[components.length];
-				double fr[] = new double[2];
-				for (int i=0; i<2; i++){
+				double fr[] = new double[NUMBER_DIMENSION];
+				for (int i=0; i<NUMBER_DIMENSION; i++){
 					fr[i]=Double.parseDouble(components[i]);
 				}
 				Vector vec = new RandomAccessSparseVector(fr.length);
