@@ -13,12 +13,14 @@ from pyspark import SparkContext
 
 
 NUMBER_ITERATIONS=1
-FILES=["/Users/luckow/workspace-saga/github-projects/kmeans/java/random_5000points.csv"] #"/Users/luckow/workspace-saga/github-projects/kmeans/java/random_500000points.csv"]
+FILES=["/data/kmeans/java/random_5000points.csv"] #"/Users/luckow/workspace-saga/github-projects/kmeans/java/random_500000points.csv"]
 NUMBER_CLUSTERS=[1, 1, 5000, 50000]
 HEADER = ("Run", "File", "Timestamp", "Number_Points", "Number_Clusters" "Time_Type", "Time")
 HEADER_CSV = ("%s;%s;%s;%s;%s;%s;\n"%HEADER)
 RESULT_DIR="results"
 RESULT_FILE_PREFIX="kmeans-spark-"
+HADOOP="/root/ephemeral-hdfs/bin/hadoop"
+HDFS_WORKING_DIR="/user/root/spark-kmeans"
 def setClassPath():
     oldClassPath = os.environ.get('SPARK_CLASSPATH', '')
     cwd = os.path.dirname(os.path.realpath(__file__))
@@ -58,26 +60,38 @@ if __name__ == "__main__":
     #masterHostname = open("/root/spark-ec2/masters").read().strip()
     #SparkContext.setSystemProperty('spark.executor.memory', '2g')
     #convergeDist = 1e-5
+    master = open("/root/spark-ec2/cluster-url").read().strip()
+    masterHostname = open("/root/spark-ec2/masters").read().strip()
     
+    os.system(HADOOP + " fs -mkdir " + HDFS_WORKING_DIR)
     #sc = SparkContext("spark://LMUCX29607.local:7077", "PythonKMeans")
-    sc = SparkContext("local", "PythonKMeans")
-    #sc = SparkContext(master, "PythonKMeans")
-    
+    #sc = SparkContext("local", "PythonKMeans")
+    sc = SparkContext(master, "PythonKMeans")
+     
     time_log = []
     for idx, file in enumerate(FILES):
         start = time.time()
+        os.system(HADOOP + " fs -put " + file + " " + HDFS_WORKING_DIR)
+        hdfs_upload = time.time()-start
+
+
+        spark_load = time.time() 
         print "Index: " + str(idx) + " File: " + str(file)
         K = NUMBER_CLUSTERS[idx]
-        lines = sc.textFile(file)
+        lines = sc.textFile("hdfs://"+masterHostname+":9000/" + HDFS_WORKING_DIR + "/" + os.path.basename(file))
         data = lines.map(lambda x: (x.split(",")[0], parseVector(x.split(",")[0:3]))).cache()
         count = data.count()
         print str(data.first())
         print "Number of records " + str(count)
-        load_time = time.time() - start
+        load_time = time.time() - spark_load
 
         result_tuple = (0, file, datetime.datetime.today().isoformat(), count, K)
-        load_time_time_tuple = result_tuple + ("Load Time", str(load_time))
-        time_log.append("%s;%s;%s;%s;%s;%s;%s\n"%(load_time_time_tuple))
+        hdfs_upload_tuple = result_tuple + ("HDFS Upload", str(hdfs_upload))
+        time_log.append("%s;%s;%s;%s;%s;%s;%s\n"%(hdfs_upload_tuple))
+
+        result_tuple = (0, file, datetime.datetime.today().isoformat(), count, K)
+        load_time_tuple = result_tuple + ("Load Time", str(load_time))
+        time_log.append("%s;%s;%s;%s;%s;%s;%s\n"%(load_time_tuple))
 
         # TODO: PySpark does not support takeSample(). Use first K points instead.
         centroids = map(lambda (x, y): y, data.take(K))
@@ -104,7 +118,10 @@ if __name__ == "__main__":
         
     d =datetime.datetime.now()
     result_filename = RESULT_FILE_PREFIX + d.strftime("%Y%m%d-%H%M%S") + ".csv"
-    os.makedirs(RESULT_DIR)
+    try:
+        os.makedirs(RESULT_DIR)
+    except:
+        pass
     f = open(os.path.join(RESULT_DIR, result_filename), "w")
     f.write(HEADER_CSV)
     for i in time_log:
