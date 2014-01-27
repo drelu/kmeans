@@ -14,13 +14,13 @@ public class RandomData {
 	//public final static long numOfPointsPerFile = 100000000l * 500l;
 	
 	// Scenario 2
-	//public final static long numOfPointsPerFile = 10000 * 5000;
+	//public final static long numOfPointsPerFile = 10000000l * 5000l;
 	
 	// Scenario 3
-	//public final static long numOfPointsPerFile = 1 * 500000;
+	public final static long numOfPointsPerFile = 1000l * 50000l;
 	
 	// Scenario 4 (tiny)
-	public final static long numOfPointsPerFile = 1 * 5000;
+	//public final static long numOfPointsPerFile = 1 * 5000;
 	
 
 	public static void main(String[] args) {
@@ -31,8 +31,10 @@ public class RandomData {
 			for (long i = 0; i < numOfPointsPerFile; i++) {
 				for (int j = 0; j < dimensions; j++) {
 					double point = random.nextDouble() * 1000;
-					writer.print(point);
-					writer.print(",");
+					writer.print(String.format("%.0f", point));
+          if (j<dimensions-1){
+					  writer.print(",");
+          }
 				}
 				writer.print("\n");
 			}
