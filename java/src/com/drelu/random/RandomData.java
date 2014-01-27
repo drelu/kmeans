@@ -17,7 +17,7 @@ public class RandomData {
 	//public final static long numOfPointsPerFile = 10000000l * 5000l;
 	
 	// Scenario 3
-	public final static long numOfPointsPerFile = 1000000l * 50000l;
+	public final static long numOfPointsPerFile = 1000l * 50000l;
 	
 	// Scenario 4 (tiny)
 	//public final static long numOfPointsPerFile = 1 * 5000;
