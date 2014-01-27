@@ -16,15 +16,17 @@ HEADER = ("Run", "Input", "Time Type", "Time", "Timestamp")
 HEADER_CSV = ("%s;%s;%s;%s;%s\n"%HEADER)
 HEADER_TAB = ("%s\t%s\t\t%s\t%s\t%s\n"%HEADER)
 NUMBER_REPEATS=2
-INPUT_DATA_PATH="/data/input/"
+INPUT_DATA_PATH="/data/input-judy/"
 HDFS_INPUT="kmeans"
 HDFS_OUTPUT="kmeans/output"
+NUMBER_OF_CLUSTERS=5
+ITERATIONS=10
 
 # Commands for the individual steps
 MAHOUT_VECTOR_CONVERSION_CMD="HADOOP_CLASSPATH=/data/bin/mahout-distribution-0.8/mahout-core-0.8-job.jar; hadoop jar /data/kmeans/mahout/kmeans/target/kmeans-1.0-SNAPSHOT-jar-with-dependencies.jar"
 
 
-MAHOUT_KMEANS_CMD=Template("/data/bin/mahout-distribution-0.8/bin/mahout kmeans --input $input --output "+ HDFS_OUTPUT + " --clusters " + os.path.join(HDFS_OUTPUT, "clusters") + " --numClusters 5 --overwrite --outlierThreshold 0 --distanceMeasure org.apache.mahout.common.distance.EuclideanDistanceMeasure --maxIter 5")
+MAHOUT_KMEANS_CMD=Template("/data/bin/mahout-distribution-0.8/bin/mahout kmeans --input $input --output "+ HDFS_OUTPUT + " --clusters " + os.path.join(HDFS_OUTPUT, "clusters") + " --numClusters 5 --overwrite --outlierThreshold 0 --distanceMeasure org.apache.mahout.common.distance.EuclideanDistanceMeasure --convergenceDelta 0 --maxIter " + str(ITERATIONS))
 
 
 """ Test Job Submission via BigJob """
