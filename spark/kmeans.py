@@ -53,7 +53,6 @@ def average(points):
 
 
 
-    
 if __name__ == "__main__":
     setClassPath()
     #master = open("/root/spark-ec2/cluster-url").read().strip()
