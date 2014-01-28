@@ -54,8 +54,11 @@ if __name__ == "__main__":
                 line =  ("%s;%s;%s;%s;%s;%s;\n"%(result_tuple))  
                 f.write(line)
                 f.flush()
+		hdfs_final_path = os.path.join(HDFS_INPUT, os.path.splitext(filename)[0], "data.mvector")
+		os.system("hadoop fs -Ddfs.block.size=16777216 -cp " + hdfs_path + " " + hdfs_final_path)
+		os.system("hadoop fs -rm " + hdfs_path)
 
-                mahout_cmd = MAHOUT_KMEANS_CMD.substitute(input=hdfs_path, clusters=clusters)
+                mahout_cmd = MAHOUT_KMEANS_CMD.substitute(input=hdfs_final_path, clusters=clusters)
                 print "Run: %s"%mahout_cmd
                 os.system(mahout_cmd)
                 end = time.time()
