@@ -68,7 +68,7 @@ public class KMeans {
 		System.setProperty("spark.cores.max", "48");
 		//System.setProperty("spark.default.parallelism", "48");
 		//System.setProperty("spark.storage.memoryFraction", "0.5");
-		System.setProperty("spark.speculation" , "true");
+		//System.setProperty("spark.speculation" , "true");
 		//System.setProperty("spark.executor.memory", "1024m");
 		JavaSparkContext sc = new JavaSparkContext(sparkUrl, "JavaKMeans",
 				sparkHome, jarFile);
