@@ -39,6 +39,7 @@ if __name__ == "__main__":
     master = open("/root/spark-ec2/cluster-url").read().strip()
     masterHostname = open("/root/spark-ec2/masters").read().strip()
     
+    os.system(HADOOP + " fs -rmr " + HDFS_WORKING_DIR)
     os.system(HADOOP + " fs -mkdir " + HDFS_WORKING_DIR)
      
     d =datetime.datetime.now()
@@ -51,7 +52,7 @@ if __name__ == "__main__":
     for repeat in range(0, NUMBER_REPEATS):
       for idx, file in enumerate(FILES):
           start = time.time()
-          os.system(HADOOP + " fs -put " + file + " " + HDFS_WORKING_DIR)
+          os.system(HADOOP + " fs -D dfs.replication=4 -put " + file + " " + HDFS_WORKING_DIR)
           hdfs_upload = time.time()-start
           spark_start = time.time() 
           count = file[file.find("_")+1:file.rfind("points")]
