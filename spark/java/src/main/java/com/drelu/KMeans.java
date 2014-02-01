@@ -78,8 +78,8 @@ public class KMeans {
 										parts[0], JavaHelpers.parseVector(in));
 							}
 						}).cache();
-		long count = data.count();
-		System.out.println("Number of records " + count);
+		//long count = data.count();
+		//System.out.println("Number of records " + count);
 		List<Tuple2<String, Vector>> centroidTuples = data.takeSample(false, K, 42);
 		final List<Vector> centroids = Lists.newArrayList();
 		for (Tuple2<String, Vector> t: centroidTuples) {
