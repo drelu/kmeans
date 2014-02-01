@@ -65,12 +65,18 @@ public class KMeans {
 				" HDFS URL: " + hdfsUrl + 
 				" numCluster: " + numClusters);
 		
-		
+		System.setProperty("spark.cores.max", "48");
+		//System.setProperty("spark.default.parallelism", "48");
+		System.setProperty("spark.storage.memoryFraction", "0.5");
+		System.setProperty("spark.speculation" , "true");
+		System.setProperty("spark.executor.memory", "1024m");
 		JavaSparkContext sc = new JavaSparkContext(sparkUrl, "JavaKMeans",
 				sparkHome, jarFile);
 		int K = 10;
 		double convergeDist = .000001;
-		JavaPairRDD<String, Vector> data = sc.textFile(hdfsUrl).map(
+		int numberPartitions = 48;
+		System.out.println("Using "+ numberPartitions + " partitions");
+		JavaPairRDD<String, Vector> data = sc.textFile(hdfsUrl, numberPartitions).map(
 						new PairFunction<String, String, Vector>() {
 							public Tuple2<String, Vector> call(String in) throws Exception {
 								String[] parts = in.split(",");
@@ -78,8 +84,8 @@ public class KMeans {
 										parts[0], JavaHelpers.parseVector(in));
 							}
 						}).cache();
-		data = data.repartition(64);
-		System.out.println("Using 64 partitions");
+		
+		
 		//long count = data.count();
 		//System.out.println("Number of records " + count);
 		List<Tuple2<String, Vector>> centroidTuples = data.takeSample(false, K, 42);
