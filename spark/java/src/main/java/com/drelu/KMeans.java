@@ -102,14 +102,14 @@ public class KMeans {
 							return average(ps);
 						}
 					}).collectAsMap();
-			tempDist = 0.0;
-			for (int i = 0; i < K; i++) {
-				tempDist += centroids.get(i).squaredDist(newCentroids.get(i));
-			}
+			//tempDist = 0.0;
+			//for (int i = 0; i < K; i++) {
+			//	tempDist += centroids.get(i).squaredDist(newCentroids.get(i));
+			//}
 			for (Map.Entry<Integer, Vector> t: newCentroids.entrySet()) {
 				centroids.set(t.getKey(), t.getValue());
 			}
-			System.out.println("Finished iteration (delta = " + tempDist + ")");
+			System.out.println("Finished iteration");
 		}
 		
 		
