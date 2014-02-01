@@ -39,13 +39,20 @@ if __name__ == "__main__":
     master = open("/root/spark-ec2/cluster-url").read().strip()
     masterHostname = open("/root/spark-ec2/masters").read().strip()
     
+    os.system(HADOOP + " fs -rmr " + HDFS_WORKING_DIR)
     os.system(HADOOP + " fs -mkdir " + HDFS_WORKING_DIR)
      
+    d =datetime.datetime.now()
+    result_filename = RESULT_FILE_PREFIX + d.strftime("%Y%m%d-%H%M%S") + ".csv"
+    try:
+        os.makedirs(RESULT_DIR)
+    except:
+        pass
     time_log = []
     for repeat in range(0, NUMBER_REPEATS):
       for idx, file in enumerate(FILES):
           start = time.time()
-          os.system(HADOOP + " fs -put " + file + " " + HDFS_WORKING_DIR)
+          os.system(HADOOP + " fs -D dfs.replication=4 -put " + file + " " + HDFS_WORKING_DIR)
           hdfs_upload = time.time()-start
           spark_start = time.time() 
           count = file[file.find("_")+1:file.rfind("points")]
@@ -67,17 +74,11 @@ if __name__ == "__main__":
           load_time_tuple = result_tuple + ("Run Time", str(run_time))
           time_log.append("%s;%s;%s;%s;%s;%s;%s\n"%(load_time_tuple))
 
-    d =datetime.datetime.now()
-    result_filename = RESULT_FILE_PREFIX + d.strftime("%Y%m%d-%H%M%S") + ".csv"
-    try:
-        os.makedirs(RESULT_DIR)
-    except:
-        pass
-    f = open(os.path.join(RESULT_DIR, result_filename), "w")
-    f.write(HEADER_CSV)
-    for i in time_log:
-        f.write(i)
-    f.close()
+      f = open(os.path.join(RESULT_DIR, result_filename), "w")
+      f.write(HEADER_CSV)
+      for i in time_log:
+          f.write(i)
+      f.close()
     
     
     #print "Clusters with some articles"
