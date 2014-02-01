@@ -42,27 +42,35 @@ public class KMeans {
 	
 	public static void main(String[] args) throws Exception {
 		System.out.println("Args lengt: " + args.length);
-		if (args.length<3){
-			System.out.println("Usage: java -jar kmeans-spark-java_2.9.3-1.0 <spark_home> <hdfs_path> <num_clusters>");
+		if (args.length<5){
+			System.out.println("Usage: java -jar kmeans-spark-java_2.9.3-1.0 <spark_home> <spark_url> <jar_file>  <hdfs_url> <num_clusters>");
 			System.exit(1);
 			
 		}
 		String sparkHome = args[0];
-		String filename = args[1];
-		int numClusters = Integer.parseInt(args[2]);
-		System.out.println("Spark Home: " + sparkHome + " Filename: " + filename + " numCluster: " + numClusters);
+		String sparkUrl = args[1];
+		String jarFile = args[2];
+		String hdfsUrl = args[3];
+		int numClusters = Integer.parseInt(args[4]);
 				
 		Logger.getLogger("spark").setLevel(Level.WARN);
 		//String sparkHome = "/root/spark";
-		String jarFile = "target/scala-2.9.3/kmeans-spark-java_2.9.3-1.0.jar";
-		String master = JavaHelpers.getSparkUrl();
-		String masterHostname = JavaHelpers.getMasterHostname();
-		JavaSparkContext sc = new JavaSparkContext(master, "WikipediaKMeans",
+		//String jarFile = "target/scala-2.9.3/kmeans-spark-java_2.9.3-1.0.jar";
+		//String master = JavaHelpers.getSparkUrl();
+		//String masterHostname = JavaHelpers.getMasterHostname();
+		
+		System.out.println("Spark Home: " + sparkHome + 
+				" Spark URL: " + sparkUrl +
+				" JAR File: " + jarFile +
+				" HDFS URL: " + hdfsUrl + 
+				" numCluster: " + numClusters);
+		
+		
+		JavaSparkContext sc = new JavaSparkContext(sparkUrl, "WikipediaKMeans",
 				sparkHome, jarFile);
 		int K = 10;
 		double convergeDist = .000001;
-		JavaPairRDD<String, Vector> data = sc.textFile(
-				"hdfs://" + masterHostname + ":9000/wikistats_featurized").map(
+		JavaPairRDD<String, Vector> data = sc.textFile(hdfsUrl).map(
 						new PairFunction<String, String, Vector>() {
 							public Tuple2<String, Vector> call(String in) throws Exception {
 								String[] parts = in.split(",");
@@ -105,20 +113,20 @@ public class KMeans {
 		}
 		
 		
-		System.out.println("Cluster with some articles:");
-		int numArticles = 10;
-		for (int i = 0; i < centroids.size(); i++) {
-			final int index = i;
-			List<Tuple2<String, Vector>> samples =
-					data.filter(new Function<Tuple2<String, Vector>, Boolean>() {
-						public Boolean call(Tuple2<String, Vector> in) throws Exception {
-							return closestPoint(in._2(), centroids) == index;
-						}}).take(numArticles);
-			for(Tuple2<String, Vector> sample: samples) {
-				System.out.println(sample._1());
-			}
-			System.out.println();
-		}
+//		System.out.println("Cluster with some articles:");
+//		int numArticles = 10;
+//		for (int i = 0; i < centroids.size(); i++) {
+//			final int index = i;
+//			List<Tuple2<String, Vector>> samples =
+//					data.filter(new Function<Tuple2<String, Vector>, Boolean>() {
+//						public Boolean call(Tuple2<String, Vector> in) throws Exception {
+//							return closestPoint(in._2(), centroids) == index;
+//						}}).take(numArticles);
+//			for(Tuple2<String, Vector> sample: samples) {
+//				System.out.println(sample._1());
+//			}
+//			System.out.println();
+//		}
 		sc.stop();
 		System.exit(0);
 	}
