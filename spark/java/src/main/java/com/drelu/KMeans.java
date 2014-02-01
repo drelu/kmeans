@@ -66,7 +66,7 @@ public class KMeans {
 				" numCluster: " + numClusters);
 		
 		
-		JavaSparkContext sc = new JavaSparkContext(sparkUrl, "WikipediaKMeans",
+		JavaSparkContext sc = new JavaSparkContext(sparkUrl, "JavaKMeans",
 				sparkHome, jarFile);
 		int K = 10;
 		double convergeDist = .000001;
