@@ -74,7 +74,7 @@ public class KMeans {
 				sparkHome, jarFile);
 		int K = 10;
 		double convergeDist = .000001;
-		int numberPartitions = 96;
+		int numberPartitions = 24;
 		System.out.println("Using "+ numberPartitions + " partitions");
 		JavaPairRDD<String, Vector> data = sc.textFile(hdfsUrl, numberPartitions).map(
 						new PairFunction<String, String, Vector>() {
