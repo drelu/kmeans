@@ -21,7 +21,7 @@ HDFS_INPUT="kmeans"
 HDFS_OUTPUT="kmeans/output"
 NUMBER_OF_CLUSTERS=500
 ITERATIONS=10
-CHUNKSIZE={5000:4939776, 50000:584704, 500:48478720} #96 mappers
+CHUNKSIZE={5000:4837888, 50000:482816, 500:48376832} #96 mappers
 
 # Commands for the individual steps
 MAHOUT_VECTOR_CONVERSION_CMD="HADOOP_CLASSPATH=/data/bin/mahout-distribution-0.8/mahout-core-0.8-job.jar; hadoop jar /data/kmeans/mahout/kmeans/target/kmeans-1.0-SNAPSHOT-jar-with-dependencies.jar"
@@ -65,7 +65,7 @@ if __name__ == "__main__":
                 print "Run: %s"%mahout_cmd
                 os.system(mahout_cmd)
                 end = time.time()
-                result_tuple = (repeat_id, str(os.path.splitext(filename)[0]), str(NUMBER_OF_CLUSTERS), "KMeans", end-end_conversion, datetime.datetime.today().isoformat(), chunk_size)
+                result_tuple = (repeat_id, str(os.path.splitext(filename)[0]), str(chunk_size), "KMeans", end-end_conversion, datetime.datetime.today().isoformat(), chunk_size)
                 line =  ("%s;%s;%s;%s;%s;%s;%s;\n"%(result_tuple))  
                 f.write(line)
                 f.flush()

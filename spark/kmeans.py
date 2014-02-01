@@ -63,7 +63,6 @@ if __name__ == "__main__":
     masterHostname = open("/root/spark-ec2/masters").read().strip()
     
     os.system(HADOOP + " fs -mkdir " + HDFS_WORKING_DIR)
-    #sc = SparkContext("spark://LMUCX29607.local:7077", "PythonKMeans")
     #sc = SparkContext("local", "PythonKMeans")
     sc = SparkContext(master, "PythonKMeans")
      
