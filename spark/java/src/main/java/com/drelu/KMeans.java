@@ -65,7 +65,7 @@ public class KMeans {
 				" HDFS URL: " + hdfsUrl + 
 				" numCluster: " + numClusters);
 		
-		System.setProperty("spark.cores.max", "48");
+		System.setProperty("spark.cores.max", "96");
 		//System.setProperty("spark.default.parallelism", "48");
 		//System.setProperty("spark.storage.memoryFraction", "0.5");
 		//System.setProperty("spark.speculation" , "true");
