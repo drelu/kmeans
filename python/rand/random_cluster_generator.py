@@ -3,8 +3,9 @@ import numpy as np
 # Size of output file will be NUMBER_CLUSTERS * NUMBER_POINTS_PER_CLUSTER * 32 Byte
 NUMBER_CLUSTERS=5
 NUMBER_POINTS_PER_CLUSTER=6710886
+NUMBER_POINTS_PER_CLUSTER=1710886
 
-for n in range(0,8):
+for n in range(0,1):
     number_points = NUMBER_POINTS_PER_CLUSTER*NUMBER_CLUSTERS*(2**n)
     OUTPUT_FILE="random_data_%.1fGB.csv"%((number_points*32.0)/(1024*1024*1024))
     print "Number points: %d Generate: %s"%(number_points, OUTPUT_FILE)
