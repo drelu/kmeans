@@ -1,9 +1,15 @@
 package com.drelu;
 
+
+import org.apache.hadoop.fs.shell.Count;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Map.Entry;
+
 import com.google.common.collect.Lists;
 
 
@@ -23,6 +29,7 @@ public class KMeans {
 		int bestIndex = 0;
 		double closest = Double.POSITIVE_INFINITY;
 		for (int i = 0; i < centers.size(); i++) {
+			System.out.println("Processing vector with a length of: " +centers.get(i).length());
 			double tempDist = p.squaredDist(centers.get(i));
 			if (tempDist < closest) {
 				closest = tempDist;
@@ -43,7 +50,7 @@ public class KMeans {
 	public static void main(String[] args) throws Exception {
 		System.out.println("Args lengt: " + args.length);
 		if (args.length<5){
-			System.out.println("Usage: java -jar kmeans-spark-java_2.9.3-1.0 <spark_home> <spark_url> <jar_file>  <hdfs_url> <num_clusters>");
+			System.out.println("Usage: java -jar kmeans-spark-java_2.9.3-1.0 <spark_home> <spark_url> <jar_file> <hdfs_url> <num_clusters>");
 			System.exit(1);
 			
 		}
@@ -52,7 +59,10 @@ public class KMeans {
 		String jarFile = args[2];
 		String hdfsUrl = args[3];
 		int numClusters = Integer.parseInt(args[4]);
-				
+			
+		
+		HashMap<String, Double> timings = new HashMap<String, Double>();
+		long startTime = System.currentTimeMillis();
 		Logger.getLogger("spark").setLevel(Level.WARN);
 		//String sparkHome = "/root/spark";
 		//String jarFile = "target/scala-2.9.3/kmeans-spark-java_2.9.3-1.0.jar";
@@ -86,7 +96,7 @@ public class KMeans {
 						}).cache();
 		
 		
-		//long count = data.count();
+		long count = data.count();
 		//System.out.println("Number of records " + count);
 		List<Tuple2<String, Vector>> centroidTuples = data.takeSample(false, K, 42);
 		final List<Vector> centroids = Lists.newArrayList();
@@ -94,8 +104,13 @@ public class KMeans {
 			centroids.add(t._2());
 		}
 		System.out.println("Done selecting initial centroids");
+		long endPrepTime = System.currentTimeMillis();
+		timings.put("Preparation", new Double(((endPrepTime-startTime)/1000)));
+		
 		double tempDist;
 		for(int numIter=0; numIter<10; numIter++){
+			
+			long startIteration = System.currentTimeMillis();
 			JavaPairRDD<Integer, Vector> closest = data.map(
 					new PairFunction<Tuple2<String, Vector>, Integer, Vector>() {
 						public Tuple2<Integer, Vector> call(Tuple2<String, Vector> in) throws Exception {
@@ -117,9 +132,12 @@ public class KMeans {
 			for (Map.Entry<Integer, Vector> t: newCentroids.entrySet()) {
 				centroids.set(t.getKey(), t.getValue());
 			}
+			long endIteration = System.currentTimeMillis();
+			timings.put("Iteration-" + numIter, new Double(((endIteration-startIteration)/1000)));
 			System.out.println("Finished iteration");
 		}
-		
+		long endTime = System.currentTimeMillis();
+		timings.put("Runtime", new Double(((endTime-startTime)/1000)));
 		
 //		System.out.println("Cluster with some articles:");
 //		int numArticles = 10;
@@ -136,6 +154,33 @@ public class KMeans {
 //			System.out.println();
 //		}
 		sc.stop();
-		System.exit(0);
+		
+		
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");  
+		File theDir = new File("results");
+  	    // if the directory does not exist, create it
+		if (!theDir.exists()) {
+		    boolean result = theDir.mkdir();  
+		     if(result) {    
+		       System.out.println("DIR created");  
+		     }
+		  }
+		
+		
+        File file = new File("results/spark-"+ df.format(new Date()) +".csv");  
+        if ( !file.exists() )
+            file.createNewFile();
+        
+        PrintWriter writer = new PrintWriter(file);
+        writer.println("Points, Centroids, Time_Type, Time");
+        String staticFields = count + ", " + numClusters + ", ";
+        for (Iterator<Entry<String, Double>> it = timings.entrySet().iterator(); it.hasNext();) {
+			Map.Entry<String, Double> entry = (Map.Entry<String, Double>) it.next();
+			String line = staticFields + entry.getKey() + ", " + entry.getValue();
+			writer.println(line);
+		}
+        writer.close();
+        
+        System.exit(0);
 	}
 }
