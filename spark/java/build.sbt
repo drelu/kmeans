@@ -2,11 +2,11 @@ name := "KMeans Spark Java"
 
 version := "1.0"
 
-scalaVersion := "2.9.3"
+scalaVersion := "2.10.3"
 
 seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
 
-libraryDependencies += "org.apache.spark" %% "spark-core" % "0.8.1-incubating"
+libraryDependencies += "org.apache.spark" %% "spark-core" % "0.9.0-incubating"
 
 libraryDependencies += "org.apache.hadoop" % "hadoop-client" % "1.0.3"
 
