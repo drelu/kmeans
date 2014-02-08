@@ -153,9 +153,10 @@ public class KMeans {
 //		}
 		sc.stop();
 		
-		
+		String results = "/tmp/results";
+		System.out.println("WRITE RESULTS TO FILE: " + results);
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");  
-		File theDir = new File("results");
+		File theDir = new File(results);
   	    // if the directory does not exist, create it
 		if (!theDir.exists()) {
 		    boolean result = theDir.mkdir();  
@@ -165,7 +166,7 @@ public class KMeans {
 		  }
 		
 		
-        File file = new File("results/spark-"+ df.format(new Date()) +".csv");  
+        File file = new File(results + "/spark-"+ df.format(new Date()) +".csv");  
         if ( !file.exists() )
             file.createNewFile();
         
