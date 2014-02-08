@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH -J KMeans-MPI        # Job Name
+#SBATCH -o kmean.o%j    # Output and error file name (%j expands to jobID)
+#SBATCH -n 24           # Total number of mpi tasks requested
+#SBATCH -p normal  # Queue (partition) name -- normal, development, etc.
+#SBATCH -t 05:00:00     # Run time (hh:mm:ss) - 1.5 hours
+
+echo "NUMBER of Processes: 24"
+time ibrun /work/01131/tg804093/src/kmeans/mpi/mpi_main -i /work/01131/tg804093/input-mpi/random_1000000points.csv -o -n 50000
+time ibrun /work/01131/tg804093/src/kmeans/mpi/mpi_main -i /work/01131/tg804093/input-mpi/random_10000000points.csv -o -n 5000
+time ibrun /work/01131/tg804093/src/kmeans/mpi/mpi_main -i /work/01131/tg804093/input-mpi/random_100000000points.csv -o -n 500
+#ibrun /work/01131/tg804093/src/kmeans/mpi/mpi_main -d -i  /work/01131/tg804093/src/kmeans/mpi/Image_data/color100.txt -o -n 5
+
