@@ -144,86 +144,86 @@ int pnetcdf_write(char      *filename,     /* input file name */
                   MPI_Comm   comm,
                   int        verbose)
 {
-    int   rank, nproc, divd, rem;
-    char  outFileName[1024];
-    int        ncid, dimids[2], dim_num_obj, clusters_varid, membership_varid, retval;
-    MPI_Offset start, count;
+   // int   rank, nproc, divd, rem;
+   // char  outFileName[1024];
+   // int        ncid, dimids[2], dim_num_obj, clusters_varid, membership_varid, retval;
+   // MPI_Offset start, count;
 
-    MPI_Comm_rank(comm, &rank);
-    MPI_Comm_size(comm, &nproc);
+   // MPI_Comm_rank(comm, &rank);
+   // MPI_Comm_size(comm, &nproc);
 
-    /* output: the coordinates of the cluster centres ----------------------*/
-    /* only proc 0 matters this, because clusters[] are the same across all proc */
+   // /* output: the coordinates of the cluster centres ----------------------*/
+   // /* only proc 0 matters this, because clusters[] are the same across all proc */
 
-    /* to save the results in a new netCDF file */
-    if (save_in_new_file) {
-        if (strcasecmp(filename+strlen(filename)-3, ".nc") == 0) {
-            strcpy(outFileName, filename);
-            outFileName[strlen(filename)-3] = '\0';
-            strcat(outFileName, ".cluster_centres.nc");
-        }
-        else
-            sprintf(outFileName, "%s.cluster_centres.nc", filename);
+   // /* to save the results in a new netCDF file */
+   // if (save_in_new_file) {
+   //     if (strcasecmp(filename+strlen(filename)-3, ".nc") == 0) {
+   //         strcpy(outFileName, filename);
+   //         outFileName[strlen(filename)-3] = '\0';
+   //         strcat(outFileName, ".cluster_centres.nc");
+   //     }
+   //     else
+   //         sprintf(outFileName, "%s.cluster_centres.nc", filename);
 
-        if (rank == 0 && verbose) {
-            printf("Writing coordinates of K=%d cluster centers to file \"%s\"\n",
-                   numClusters, outFileName);
+   //     if (rank == 0 && verbose) {
+   //         printf("Writing coordinates of K=%d cluster centers to file \"%s\"\n",
+   //                numClusters, outFileName);
 
-            printf("Writing membership of N=%d data objects to file \"%s\"\n",
-                   totalNumObjs, outFileName);
-        }
+   //         printf("Writing membership of N=%d data objects to file \"%s\"\n",
+   //                totalNumObjs, outFileName);
+   //     }
 
-        /* Create the file. The NC_CLOBBER parameter tells netCDF to
-         * overwrite this file, if it already exists.*/
-        if ((retval = ncmpi_create(comm, outFileName, NC_CLOBBER | NC_64BIT_OFFSET, MPI_INFO_NULL, &ncid)))
-            ERR2(retval);
+   //     /* Create the file. The NC_CLOBBER parameter tells netCDF to
+   //      * overwrite this file, if it already exists.*/
+   //     if ((retval = ncmpi_create(comm, outFileName, NC_CLOBBER | NC_64BIT_OFFSET, MPI_INFO_NULL, &ncid)))
+   //         ERR2(retval);
 
-        /* Define the dimensions. NetCDF will hand back an ID for each. */
-        if ((retval = ncmpi_def_dim(ncid, "num_clusters", numClusters, &dimids[0])))
-            ERR2(retval);
+   //     /* Define the dimensions. NetCDF will hand back an ID for each. */
+   //     if ((retval = ncmpi_def_dim(ncid, "num_clusters", numClusters, &dimids[0])))
+   //         ERR2(retval);
 
-        if ((retval = ncmpi_def_dim(ncid, "num_coordinates", numCoords, &dimids[1])))
-            ERR2(retval);
+   //     if ((retval = ncmpi_def_dim(ncid, "num_coordinates", numCoords, &dimids[1])))
+   //         ERR2(retval);
 
-        if ((retval = ncmpi_def_dim(ncid, "num_elements", totalNumObjs, &dim_num_obj)))
-            ERR2(retval);
+   //     if ((retval = ncmpi_def_dim(ncid, "num_elements", totalNumObjs, &dim_num_obj)))
+   //         ERR2(retval);
 
-        /* Define the clusters variable. The type of the variable in this case is
-         * NC_FLOAT (4-byte float). */
-        if ((retval = ncmpi_def_var(ncid, "clusters", NC_FLOAT, 2, dimids, &clusters_varid)))
-            ERR2(retval);
+   //     /* Define the clusters variable. The type of the variable in this case is
+   //      * NC_FLOAT (4-byte float). */
+   //     if ((retval = ncmpi_def_var(ncid, "clusters", NC_FLOAT, 2, dimids, &clusters_varid)))
+   //         ERR2(retval);
 
-        /* Define the membership variable. The type of the variable in this case is
-         * NC_INT (4-byte integer). */
-        if ((retval = ncmpi_def_var(ncid, "membership", NC_INT, 1, &dim_num_obj, &membership_varid)))
-            ERR2(retval);
+   //     /* Define the membership variable. The type of the variable in this case is
+   //      * NC_INT (4-byte integer). */
+   //     if ((retval = ncmpi_def_var(ncid, "membership", NC_INT, 1, &dim_num_obj, &membership_varid)))
+   //         ERR2(retval);
 
-        /* End define mode. This tells netCDF we are done defining
-         * metadata. */
-        if ((retval = ncmpi_enddef(ncid)))
-            ERR2(retval);
-    }
-    else { /* add new variables into existing netCDF file */
-    }
+   //     /* End define mode. This tells netCDF we are done defining
+   //      * metadata. */
+   //     if ((retval = ncmpi_enddef(ncid)))
+   //         ERR2(retval);
+   // }
+   // else { /* add new variables into existing netCDF file */
+   // }
 
-    /* write cluster centers */
-    if ((retval = ncmpi_put_var_float_all(ncid, clusters_varid, *clusters)))
-        ERR2(retval);
+   // /* write cluster centers */
+   // if ((retval = ncmpi_put_var_float_all(ncid, clusters_varid, *clusters)))
+   //     ERR2(retval);
 
-    /* write membership variable */
-    divd  = totalNumObjs / nproc;
-    rem   = totalNumObjs % nproc;
-    start = (rank < rem) ? rank*(divd+1) : rank*divd + rem;
-    count = numObjs;
-    if (_debug) printf("%2d: start=%lld count=%lld\n",rank,start,count);
+   // /* write membership variable */
+   // divd  = totalNumObjs / nproc;
+   // rem   = totalNumObjs % nproc;
+   // start = (rank < rem) ? rank*(divd+1) : rank*divd + rem;
+   // count = numObjs;
+   // if (_debug) printf("%2d: start=%lld count=%lld\n",rank,start,count);
 
-    if ((retval = ncmpi_put_vara_int_all(ncid, membership_varid, &start, &count, membership)))
-        ERR2(retval);
+   // if ((retval = ncmpi_put_vara_int_all(ncid, membership_varid, &start, &count, membership)))
+   //     ERR2(retval);
 
-   /* Close the file. This frees up any internal netCDF resources
-    * associated with the file, and flushes any buffers. */
-   if ((retval = ncmpi_close(ncid)))
-      ERR2(retval);
+   ///* Close the file. This frees up any internal netCDF resources
+   // * associated with the file, and flushes any buffers. */
+   //if ((retval = ncmpi_close(ncid)))
+   //   ERR2(retval);
 
     return 1;
 }
