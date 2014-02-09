@@ -27,7 +27,7 @@ public class KMeans {
 		int bestIndex = 0;
 		double closest = Double.POSITIVE_INFINITY;
 		for (int i = 0; i < centers.size(); i++) {
-			System.out.println("Processing vector with a length of: " +centers.get(i).length());
+			//System.out.println("Processing vector with a length of: " +centers.get(i).length());
 			double tempDist = p.squaredDist(centers.get(i));
 			if (tempDist < closest) {
 				closest = tempDist;
