@@ -153,7 +153,7 @@ int mpi_kmeans(float    **objects,     /* in: [numObjs][numCoords] */
             if (rank == 0)
                 printf("%2d: loop=%d time=%f sec\n",rank,loop,curT);
         }
-    } while (loop++ < 10);
+    } while (loop++ < 9);
 
     if (_debug && rank == 0)
         printf("%2d: delta=%f threshold=%f loop=%d\n",rank,delta,threshold,loop);
