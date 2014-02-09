@@ -14,7 +14,6 @@ import com.google.common.collect.Lists;
 
 
 import scala.Tuple2;
-import scala.Tuple3;
 import org.apache.spark.api.java.*;
 import org.apache.spark.api.java.function.*;
 import org.apache.spark.util.Vector;
@@ -95,7 +94,7 @@ public class KMeans {
 		
 		
 		long count = data.count();
-		//System.out.println("Number of records " + count);
+		System.out.println("Number of records: " + count);
 		List<Tuple2<String, Vector>> centroidTuples = data.takeSample(false, K, 42);
 		final List<Vector> centroids = Lists.newArrayList();
 		for (Tuple2<String, Vector> t: centroidTuples) {
@@ -123,10 +122,10 @@ public class KMeans {
 							return average(ps);
 						}
 					}).collectAsMap();
-			//tempDist = 0.0;
-			//for (int i = 0; i < K; i++) {
-			//	tempDist += centroids.get(i).squaredDist(newCentroids.get(i));
-			//}
+			tempDist = 0.0;
+			for (int i = 0; i < K; i++) {
+				tempDist += centroids.get(i).squaredDist(newCentroids.get(i));
+			}
 			for (Map.Entry<Integer, Vector> t: newCentroids.entrySet()) {
 				centroids.set(t.getKey(), t.getValue());
 			}
