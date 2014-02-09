@@ -218,15 +218,6 @@ int main(int argc, char **argv) {
     timing            = MPI_Wtime();
     clustering_timing = timing - clustering_timing;
 
-    /* output: the coordinates of the cluster centres ----------------------*/
-#ifdef _PNETCDF_BUILT
-    if (do_pnetcdf)
-        pnetcdf_write(filename, 1, numClusters, numObjs, numCoords, clusters,
-                      membership, totalNumObjs, MPI_COMM_WORLD, verbose);
-    else
-#endif
-        mpi_write(isOutFileBinary, filename, numClusters, numObjs, numCoords,
-                  clusters, membership, totalNumObjs, MPI_COMM_WORLD, verbose);
 
     free(membership);
     free(clusters[0]);
