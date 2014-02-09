@@ -1,10 +1,10 @@
 <classpath>
-  <classpathentry kind="src" path="src/main/scala" output="target/scala-2.9.3/classes"/>
-  <classpathentry kind="src" path="src/main/java" output="target/scala-2.9.3/classes"/>
-  <classpathentry kind="src" path="src/test/scala" output="target/scala-2.9.3/test-classes"/>
-  <classpathentry kind="src" path="src/test/java" output="target/scala-2.9.3/test-classes"/>
+  <classpathentry kind="src" path="src/main/scala" output="target/scala-2.10/classes"/>
+  <classpathentry kind="src" path="src/main/java" output="target/scala-2.10/classes"/>
+  <classpathentry kind="src" path="src/test/scala" output="target/scala-2.10/test-classes"/>
+  <classpathentry kind="src" path="src/test/java" output="target/scala-2.10/test-classes"/>
   <classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.apache.spark/spark-core_2.9.3/jars/spark-core_2.9.3-0.8.1-incubating.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.apache.spark/spark-core_2.10/jars/spark-core_2.10-0.9.0-incubating.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.apache.hadoop/hadoop-client/jars/hadoop-client-1.0.4.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.apache.hadoop/hadoop-core/jars/hadoop-core-1.0.4.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/xmlenc/xmlenc/jars/xmlenc-0.52.jar"/>
@@ -48,10 +48,9 @@
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.eclipse.jetty/jetty-util/jars/jetty-util-7.6.8.v20121106.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.google.guava/guava/bundles/guava-14.0.1.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.google.code.findbugs/jsr305/jars/jsr305-1.3.9.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.ning/compress-lzf/bundles/compress-lzf-0.8.4.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.ning/compress-lzf/bundles/compress-lzf-1.0.0.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.ow2.asm/asm/jars/asm-4.0.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.google.protobuf/protobuf-java/jars/protobuf-java-2.4.1.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.twitter/chill_2.9.3/jars/chill_2.9.3-0.3.1.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.twitter/chill_2.10/jars/chill_2.10-0.3.1.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.twitter/chill-java/jars/chill-java-0.3.1.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.esotericsoftware.kryo/kryo/bundles/kryo-2.21.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.esotericsoftware.reflectasm/reflectasm/jars/reflectasm-1.07-shaded.jar"/>
@@ -59,26 +58,22 @@
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.objenesis/objenesis/jars/objenesis-1.2.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.ow2.asm/asm-commons/jars/asm-commons-4.0.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.ow2.asm/asm-tree/jars/asm-tree-4.0.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.typesafe.akka/akka-actor/jars/akka-actor-2.0.5.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.typesafe/config/bundles/config-0.3.1.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.typesafe.akka/akka-remote/jars/akka-remote-2.0.5.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/io.netty/netty/bundles/netty-3.5.4.Final.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/net.debasishg/sjson_2.9.1/jars/sjson_2.9.1-0.15.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/net.databinder/dispatch-json_2.9.1/jars/dispatch-json_2.9.1-0.8.5.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.apache.httpcomponents/httpclient/jars/httpclient-4.1.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.apache.httpcomponents/httpcore/jars/httpcore-4.1.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/commons-io/commons-io/jars/commons-io-1.4.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/voldemort.store.compress/h2-lzf/jars/h2-lzf-1.0.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.typesafe.akka/akka-slf4j/jars/akka-slf4j-2.0.5.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.scala-lang/scalap/jars/scalap-2.9.3.jar"/>
-  <classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_COMPILER_CONTAINER"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/net.liftweb/lift-json_2.9.2/jars/lift-json_2.9.2-2.5.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.spark-project.akka/akka-remote_2.10/bundles/akka-remote_2.10-2.2.3-shaded-protobuf.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.spark-project.akka/akka-actor_2.10/jars/akka-actor_2.10-2.2.3-shaded-protobuf.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.typesafe/config/bundles/config-1.0.2.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/io.netty/netty/bundles/netty-3.6.6.Final.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.spark-project.protobuf/protobuf-java/jars/protobuf-java-2.4.1-shaded.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.uncommons.maths/uncommons-maths/jars/uncommons-maths-1.2.2a.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.spark-project.akka/akka-slf4j_2.10/bundles/akka-slf4j_2.10-2.2.3-shaded-protobuf.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/net.liftweb/lift-json_2.10/jars/lift-json_2.10-2.5.1.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.thoughtworks.paranamer/paranamer/jars/paranamer-2.4.1.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/it.unimi.dsi/fastutil/jars/fastutil-6.4.4.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/colt/colt/jars/colt-1.2.0.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/concurrent/concurrent/jars/concurrent-1.3.4.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.apache.mesos/mesos/jars/mesos-0.13.0.jar"/>
-  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/io.netty/netty-all/jars/netty-all-4.0.0.Beta2.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.google.protobuf/protobuf-java/jars/protobuf-java-2.4.1.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/io.netty/netty-all/jars/netty-all-4.0.13.Final.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.clearspring.analytics/stream/jars/stream-2.4.0.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.codahale.metrics/metrics-core/bundles/metrics-core-3.0.0.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.codahale.metrics/metrics-jvm/bundles/metrics-jvm-3.0.0.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.codahale.metrics/metrics-json/bundles/metrics-json-3.0.0.jar"/>
@@ -88,6 +83,7 @@
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.codahale.metrics/metrics-ganglia/bundles/metrics-ganglia-3.0.0.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/info.ganglia.gmetric4j/gmetric4j/jars/gmetric4j-1.0.3.jar"/>
   <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/org.acplt/oncrpc/jars/oncrpc-1.0.7.jar"/>
+  <classpathentry kind="lib" path="/Users/luckow/.ivy2/cache/com.codahale.metrics/metrics-graphite/bundles/metrics-graphite-3.0.0.jar"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="output" path="bin"/>
 </classpath>

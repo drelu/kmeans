@@ -103,7 +103,7 @@ public class KMeans {
 		}
 		System.out.println("Done selecting initial centroids");
 		long endPrepTime = System.currentTimeMillis();
-		timings.put("Preparation", new Double((((float) (endPrepTime-startTime))/1000.0)));
+		timings.put("Preparation", new Double((((double) (endPrepTime-startTime))/1000.0)));
 		
 		double tempDist;
 		for(int numIter=0; numIter<10; numIter++){
@@ -131,11 +131,11 @@ public class KMeans {
 				centroids.set(t.getKey(), t.getValue());
 			}
 			long endIteration = System.currentTimeMillis();
-			timings.put("Iteration-" + numIter, new Double((((float) (endIteration-startIteration))/1000.0)));
+			timings.put("Iteration-" + numIter, new Double((((double) (endIteration-startIteration))/1000.0)));
 			System.out.println("Finished iteration");
 		}
 		long endTime = System.currentTimeMillis();
-		timings.put("Runtime", new Double((((float) (endTime-startTime))/1000.0)));
+		timings.put("Runtime", new Double((((double) (endTime-startTime))/1000.0)));
 		
 //		System.out.println("Cluster with some articles:");
 //		int numArticles = 10;
