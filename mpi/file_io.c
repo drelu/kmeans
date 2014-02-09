@@ -235,26 +235,26 @@ int file_write(char      *filename,     /* input file name */
     char  outFileName[1024];
 
     /* output: the coordinates of the cluster centres ----------------------*/
-    sprintf(outFileName, "%s.cluster_centres", filename);
-    if (verbose) printf("Writing coordinates of K=%d cluster centers to file \"%s\"\n",
-                        numClusters, outFileName);
-    fptr = fopen(outFileName, "w");
-    for (i=0; i<numClusters; i++) {
-        fprintf(fptr, "%d ", i);
-        for (j=0; j<numCoords; j++)
-            fprintf(fptr, "%f ", clusters[i][j]);
-        fprintf(fptr, "\n");
-    }
-    fclose(fptr);
+    //sprintf(outFileName, "%s.cluster_centres", filename);
+    //if (verbose) printf("Writing coordinates of K=%d cluster centers to file \"%s\"\n",
+    //                    numClusters, outFileName);
+    //fptr = fopen(outFileName, "w");
+    //for (i=0; i<numClusters; i++) {
+    //    fprintf(fptr, "%d ", i);
+    //    for (j=0; j<numCoords; j++)
+    //        fprintf(fptr, "%f ", clusters[i][j]);
+    //    fprintf(fptr, "\n");
+    //}
+    //fclose(fptr);
 
-    /* output: the closest cluster centre to each of the data points --------*/
-    sprintf(outFileName, "%s.membership", filename);
-    if (verbose) printf("Writing membership of N=%d data objects to file \"%s\"\n",
-                        numObjs, outFileName);
-    fptr = fopen(outFileName, "w");
-    for (i=0; i<numObjs; i++)
-        fprintf(fptr, "%d %d\n", i, membership[i]);
-    fclose(fptr);
+    ///* output: the closest cluster centre to each of the data points --------*/
+    //sprintf(outFileName, "%s.membership", filename);
+    //if (verbose) printf("Writing membership of N=%d data objects to file \"%s\"\n",
+    //                    numObjs, outFileName);
+    //fptr = fopen(outFileName, "w");
+    //for (i=0; i<numObjs; i++)
+    //    fprintf(fptr, "%d %d\n", i, membership[i]);
+    //fclose(fptr);
 
     return 1;
 }
