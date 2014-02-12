@@ -21,7 +21,11 @@ import org.apache.spark.util.Vector;
 
 
 public class KMeans {
-
+	
+	public static int numberPointsClosest=0;
+	public static int numberPointsAverage=0;
+	public static int dimensions=0;
+	
 	static int closestPoint(Vector p, List<Vector> centers) {
 		int bestIndex = 0;
 		double closest = Double.POSITIVE_INFINITY;
@@ -33,14 +37,18 @@ public class KMeans {
 				bestIndex = i;
 			}
 		}
+		numberPointsClosest++;
 		return bestIndex;
 	}
+	
+	
 	static Vector average(List<Vector> ps) {
 		int numVectors = ps.size();
 		Vector out = new Vector(ps.get(0).elements());
 		for (int i = 0; i < numVectors; i++) {
 			out.addInPlace(ps.get(i));
 		}
+		numberPointsAverage++;
 		return out.divide(numVectors);
 	}
 	
@@ -135,6 +143,8 @@ public class KMeans {
 		}
 		long endTime = System.currentTimeMillis();
 		timings.put("Runtime", new Double((((double) (endTime-startTime))/1000.0)));
+		timings.put("Number Points Closest", new Double(numberPointsClosest));
+		timings.put("Number Points Average", new Double(numberPointsAverage));
 		
 //		System.out.println("Cluster with some articles:");
 //		int numArticles = 10;
