@@ -56,7 +56,7 @@ public class SeqDistanceCalcTester {
 		System.out.println("start computation...");
 		long startTime = System.currentTimeMillis();
 		// run through all vectors and get the minimum distance counts
-		int count = 0;
+		long count = 0;
 		for (int i = 0; i < numDataPoints; i++) {
 			double distance = 0;
 			int minCentroid = 0;
@@ -99,7 +99,7 @@ public class SeqDistanceCalcTester {
 		System.out.println("start computation...");
 		long startTime = System.currentTimeMillis();
 		// run through all vectors and get the minimum distance counts
-		int count = 0;
+		long count = 0;
 		for (int i = 0; i < numDataPoints; i++) {
 			double distance = 0;
 			int minCentroid = 0;
