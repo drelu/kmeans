@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import com.google.common.collect.Lists;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 import scala.Tuple2;
@@ -22,8 +23,8 @@ import org.apache.spark.util.Vector;
 
 public class KMeans {
 	
-	public static int numberPointsClosest=0;
-	public static int numberPointsAverage=0;
+	public static volatile AtomicInteger numberPointsClosest = new AtomicInteger(0);
+	public static volatile AtomicInteger numberPointsAverage= new AtomicInteger(0);
 	public static int dimensions=0;
 	
 	static int closestPoint(Vector p, List<Vector> centers) {
@@ -37,7 +38,7 @@ public class KMeans {
 				bestIndex = i;
 			}
 		}
-		numberPointsClosest++;
+		numberPointsClosest.incrementAndGet();
 		return bestIndex;
 	}
 	
@@ -47,8 +48,8 @@ public class KMeans {
 		Vector out = new Vector(ps.get(0).elements());
 		for (int i = 0; i < numVectors; i++) {
 			out.addInPlace(ps.get(i));
+			numberPointsAverage.incrementAndGet();
 		}
-		numberPointsAverage++;
 		return out.divide(numVectors);
 	}
 	
@@ -80,7 +81,7 @@ public class KMeans {
 				" HDFS URL: " + hdfsUrl + 
 				" numCluster: " + numClusters);
 		
-		System.setProperty("spark.cores.max", "96");
+		//System.setProperty("spark.cores.max", "96");
 		//System.setProperty("spark.default.parallelism", "48");
 		//System.setProperty("spark.storage.memoryFraction", "0.5");
 		//System.setProperty("spark.speculation" , "true");
@@ -89,7 +90,7 @@ public class KMeans {
 				sparkHome, jarFile);
 		int K = 10;
 		double convergeDist = .000001;
-		int numberPartitions = 24;
+		int numberPartitions = 12;
 		System.out.println("Using "+ numberPartitions + " partitions");
 		JavaPairRDD<String, Vector> data = sc.textFile(hdfsUrl, numberPartitions).map(
 						new PairFunction<String, String, Vector>() {
@@ -143,8 +144,9 @@ public class KMeans {
 		}
 		long endTime = System.currentTimeMillis();
 		timings.put("Runtime", new Double((((double) (endTime-startTime))/1000.0)));
-		timings.put("Number Points Closest", new Double(numberPointsClosest));
-		timings.put("Number Points Average", new Double(numberPointsAverage));
+		timings.put("Number Points Closest", numberPointsClosest.doubleValue());
+		timings.put("Number Partitions", new Double(numberPartitions));
+		timings.put("Number Points Average", numberPointsAverage.doubleValue());
 		
 //		System.out.println("Cluster with some articles:");
 //		int numArticles = 10;
