@@ -41,7 +41,7 @@ public class KMeans {
 				closest = tempDist;
 				bestIndex = i;
 			}
-			numberPointsClosest.incrementAndGet();
+			//numberPointsClosest.incrementAndGet();
 		}
 		
 		return bestIndex;
@@ -53,7 +53,7 @@ public class KMeans {
 		Vector out = new Vector(ps.get(0).elements());
 		for (int i = 0; i < numVectors; i++) {
 			out.addInPlace(ps.get(i));
-			numberPointsAverage.incrementAndGet();
+			//numberPointsAverage.incrementAndGet();
 		}
 		return out.divide(numVectors);
 	}
@@ -149,9 +149,9 @@ public class KMeans {
 		}
 		long endTime = System.currentTimeMillis();
 		timings.put("Runtime", new Double((((double) (endTime-startTime))/1000.0)));
-		timings.put("Number Points Closest", numberPointsClosest.doubleValue());
+		timings.put("Number Points Closest", new Double(numberPointsClosest.doubleValue()));
 		timings.put("Number Partitions", new Double(numberPartitions));
-		timings.put("Number Points Average", numberPointsAverage.doubleValue());
+		timings.put("Number Points Average", new Double (numberPointsAverage.doubleValue()));
 		
 //		System.out.println("Cluster with some articles:");
 //		int numArticles = 10;
