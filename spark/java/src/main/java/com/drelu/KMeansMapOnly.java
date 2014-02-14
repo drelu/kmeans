@@ -21,19 +21,20 @@ import org.apache.spark.util.Vector;
 
 
 
-public class KMeans {
-	
+public class KMeansMapOnly {
+
 	public static volatile AtomicInteger numberPointsClosest = new AtomicInteger(0);
+	public static volatile AtomicInteger numberPointsClosestComputations = new AtomicInteger(0);
 	public static volatile AtomicInteger numberPointsAverage= new AtomicInteger(0);
 	public static int dimensions=0;
-	
+
 	static int closestPoint(Vector p, List<Vector> centers) {
 		int bestIndex = 0;
 		double closest = Double.POSITIVE_INFINITY;
-		System.out.println("Processing Centroids #: " + centers.size());
 		for (int i = 0; i < centers.size(); i++) {
 			//System.out.println("Processing vector with a length of: " +centers.get(i).length());
 			double tempDist = p.squaredDist(centers.get(i));
+			numberPointsClosestComputations.incrementAndGet();
 			if (tempDist < closest) {
 				closest = tempDist;
 				bestIndex = i;
@@ -42,8 +43,8 @@ public class KMeans {
 		numberPointsClosest.incrementAndGet();
 		return bestIndex;
 	}
-	
-	
+
+
 	static Vector average(List<Vector> ps) {
 		int numVectors = ps.size();
 		Vector out = new Vector(ps.get(0).elements());
@@ -53,21 +54,21 @@ public class KMeans {
 		}
 		return out.divide(numVectors);
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		System.out.println("Args lengt: " + args.length);
 		if (args.length<5){
 			System.out.println("Usage: java -jar kmeans-spark-java_2.9.3-1.0 <spark_home> <spark_url> <jar_file> <hdfs_url> <num_clusters>");
 			System.exit(1);
-			
+
 		}
 		String sparkHome = args[0];
 		String sparkUrl = args[1];
 		String jarFile = args[2];
 		String hdfsUrl = args[3];
 		int numClusters = Integer.parseInt(args[4]);
-			
-		
+
+
 		HashMap<String, Double> timings = new HashMap<String, Double>();
 		long startTime = System.currentTimeMillis();
 		Logger.getLogger("spark").setLevel(Level.WARN);
@@ -75,13 +76,13 @@ public class KMeans {
 		//String jarFile = "target/scala-2.9.3/kmeans-spark-java_2.9.3-1.0.jar";
 		//String master = JavaHelpers.getSparkUrl();
 		//String masterHostname = JavaHelpers.getMasterHostname();
-		
+
 		System.out.println("Spark Home: " + sparkHome + 
 				" Spark URL: " + sparkUrl +
 				" JAR File: " + jarFile +
 				" HDFS URL: " + hdfsUrl + 
 				" numCluster: " + numClusters);
-		
+
 		//System.setProperty("spark.cores.max", "96");
 		//System.setProperty("spark.default.parallelism", "48");
 		//System.setProperty("spark.storage.memoryFraction", "0.5");
@@ -94,15 +95,15 @@ public class KMeans {
 		int numberPartitions = 12;
 		System.out.println("Using "+ numberPartitions + " partitions");
 		JavaPairRDD<String, Vector> data = sc.textFile(hdfsUrl, numberPartitions).map(
-						new PairFunction<String, String, Vector>() {
-							public Tuple2<String, Vector> call(String in) throws Exception {
-								String[] parts = in.split(",");
-								return new Tuple2<String, Vector>(
-										parts[0], JavaHelpers.parseVector(in));
-							}
-						}).cache();
-		
-		
+				new PairFunction<String, String, Vector>() {
+					public Tuple2<String, Vector> call(String in) throws Exception {
+						String[] parts = in.split(",");
+						return new Tuple2<String, Vector>(
+								parts[0], JavaHelpers.parseVector(in));
+					}
+				}).cache();
+
+
 		long count = data.count();
 		System.out.println("Number of records: " + count);
 		List<Tuple2<String, Vector>> centroidTuples = data.takeSample(false, K, 42);
@@ -113,85 +114,87 @@ public class KMeans {
 		System.out.println("Done selecting initial centroids");
 		long endPrepTime = System.currentTimeMillis();
 		timings.put("Preparation", new Double((((double) (endPrepTime-startTime))/1000.0)));
-		
+
 		double tempDist;
-		for(int numIter=0; numIter<10; numIter++){
-			
-			long startIteration = System.currentTimeMillis();
-			JavaPairRDD<Integer, Vector> closest = data.map(
-					new PairFunction<Tuple2<String, Vector>, Integer, Vector>() {
-						public Tuple2<Integer, Vector> call(Tuple2<String, Vector> in) throws Exception {
-							return new Tuple2<Integer, Vector>(closestPoint(in._2(), centroids), in._2());
-						}
+		//		for(int numIter=0; numIter<10; numIter++){
+		//			
+		long startIteration = System.currentTimeMillis();
+		JavaPairRDD<Integer, Vector> closest = data.map(
+				new PairFunction<Tuple2<String, Vector>, Integer, Vector>() {
+					public Tuple2<Integer, Vector> call(Tuple2<String, Vector> in) throws Exception {
+						return new Tuple2<Integer, Vector>(closestPoint(in._2(), centroids), in._2());
 					}
-					);
-			JavaPairRDD<Integer, List<Vector>> pointsGroup = closest.groupByKey();
-			Map<Integer, Vector> newCentroids = pointsGroup.mapValues(
-					new Function<List<Vector>, Vector>() {
-						public Vector call(List<Vector> ps) throws Exception {
-							return average(ps);
-						}
-					}).collectAsMap();
-			tempDist = 0.0;
-			for (int i = 0; i < K; i++) {
-				tempDist += centroids.get(i).squaredDist(newCentroids.get(i));
-			}
-			for (Map.Entry<Integer, Vector> t: newCentroids.entrySet()) {
-				centroids.set(t.getKey(), t.getValue());
-			}
-			long endIteration = System.currentTimeMillis();
-			timings.put("Iteration-" + numIter, new Double((((double) (endIteration-startIteration))/1000.0)));
-			System.out.println("Finished iteration");
-		}
+				}
+				);
+		System.out.println("Number of points: " + closest.count());
+		//			JavaPairRDD<Integer, List<Vector>> pointsGroup = closest.groupByKey();
+		//			Map<Integer, Vector> newCentroids = pointsGroup.mapValues(
+		//					new Function<List<Vector>, Vector>() {
+		//						public Vector call(List<Vector> ps) throws Exception {
+		//							return average(ps);
+		//						}
+		//					}).collectAsMap();
+		//			tempDist = 0.0;
+		//			for (int i = 0; i < K; i++) {
+		//				tempDist += centroids.get(i).squaredDist(newCentroids.get(i));
+		//			}
+		//			for (Map.Entry<Integer, Vector> t: newCentroids.entrySet()) {
+		//				centroids.set(t.getKey(), t.getValue());
+		//			}
+		long endIteration = System.currentTimeMillis();
+		timings.put("ClosestPoint", new Double((((double) (endIteration-startIteration))/1000.0)));
+		System.out.println("Finished iteration");
+		//		}
 		long endTime = System.currentTimeMillis();
 		timings.put("Runtime", new Double((((double) (endTime-startTime))/1000.0)));
 		timings.put("Number Points Closest", numberPointsClosest.doubleValue());
+		timings.put("Number Points Closest Computations", numberPointsClosestComputations.doubleValue());
 		timings.put("Number Partitions", new Double(numberPartitions));
 		timings.put("Number Points Average", numberPointsAverage.doubleValue());
-		
-//		System.out.println("Cluster with some articles:");
-//		int numArticles = 10;
-//		for (int i = 0; i < centroids.size(); i++) {
-//			final int index = i;
-//			List<Tuple2<String, Vector>> samples =
-//					data.filter(new Function<Tuple2<String, Vector>, Boolean>() {
-//						public Boolean call(Tuple2<String, Vector> in) throws Exception {
-//							return closestPoint(in._2(), centroids) == index;
-//						}}).take(numArticles);
-//			for(Tuple2<String, Vector> sample: samples) {
-//				System.out.println(sample._1());
-//			}
-//			System.out.println();
-//		}
+
+		//		System.out.println("Cluster with some articles:");
+		//		int numArticles = 10;
+		//		for (int i = 0; i < centroids.size(); i++) {
+		//			final int index = i;
+		//			List<Tuple2<String, Vector>> samples =
+		//					data.filter(new Function<Tuple2<String, Vector>, Boolean>() {
+		//						public Boolean call(Tuple2<String, Vector> in) throws Exception {
+		//							return closestPoint(in._2(), centroids) == index;
+		//						}}).take(numArticles);
+		//			for(Tuple2<String, Vector> sample: samples) {
+		//				System.out.println(sample._1());
+		//			}
+		//			System.out.println();
+		//		}
 		sc.stop();
-		
-		String results = "/tmp/results";
+
+		String results = "/tmp/results-spark-map-only";
 		System.out.println("WRITE RESULTS TO FILE: " + results);
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");  
 		File theDir = new File(results);
-  	    // if the directory does not exist, create it
+		// if the directory does not exist, create it
 		if (!theDir.exists()) {
-		    boolean result = theDir.mkdir();  
-		     if(result) {    
-		       System.out.println("DIR created");  
-		     }
-		  }
-		
-		
-        File file = new File(results + "/spark-"+ df.format(new Date()) +".csv");  
-        if ( !file.exists() )
-            file.createNewFile();
-        
-        PrintWriter writer = new PrintWriter(file);
-        writer.println("Points, Centroids, Time_Type, Time");
-        String staticFields = count + ", " + numClusters + ", ";
-        for (Iterator<Entry<String, Double>> it = timings.entrySet().iterator(); it.hasNext();) {
+			boolean result = theDir.mkdir();  
+			if(result) {    
+				System.out.println("DIR created");  
+			}
+		}
+
+
+		File file = new File(results + "/spark-"+ df.format(new Date()) +".csv");  
+		if ( !file.exists() )
+			file.createNewFile();
+
+		PrintWriter writer = new PrintWriter(file);
+		writer.println("Points, Centroids, Time_Type, Time");
+		String staticFields = count + ", " + numClusters + ", ";
+		for (Iterator<Entry<String, Double>> it = timings.entrySet().iterator(); it.hasNext();) {
 			Map.Entry<String, Double> entry = (Map.Entry<String, Double>) it.next();
 			String line = staticFields + entry.getKey() + ", " + entry.getValue();
 			writer.println(line);
 		}
-        writer.close();
-        
-        System.exit(0);
+		writer.close();
+
+		System.exit(0);
 	}
 }
