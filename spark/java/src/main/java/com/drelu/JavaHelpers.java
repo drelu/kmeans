@@ -7,6 +7,8 @@ import com.google.common.collect.Lists;
 import org.apache.spark.util.Vector;
 
 public class JavaHelpers {
+	
+	
 	/** Creates a vector object from a string */
 	static Vector parseVector(String line) {
 		String[] parts = line.split(",");
@@ -14,6 +16,7 @@ public class JavaHelpers {
 		for (int i = 0; i < parts.length; i++) {
 			dParts[i] = Double.parseDouble(parts[i]);
 		}
+		
 		return new Vector(dParts);
 	}
 

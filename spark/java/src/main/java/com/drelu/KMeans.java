@@ -11,10 +11,10 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import com.google.common.collect.Lists;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 import scala.Tuple2;
-import scala.Tuple3;
 import org.apache.spark.api.java.*;
 import org.apache.spark.api.java.function.*;
 import org.apache.spark.util.Vector;
@@ -22,7 +22,11 @@ import org.apache.spark.util.Vector;
 
 
 public class KMeans {
-
+	
+	public static volatile AtomicInteger numberPointsClosest = new AtomicInteger(0);
+	public static volatile AtomicInteger numberPointsAverage= new AtomicInteger(0);
+	public static int dimensions=0;
+	
 	static int closestPoint(Vector p, List<Vector> centers) {
 		int bestIndex = 0;
 		double closest = Double.POSITIVE_INFINITY;
@@ -34,13 +38,17 @@ public class KMeans {
 				bestIndex = i;
 			}
 		}
+		numberPointsClosest.incrementAndGet();
 		return bestIndex;
 	}
+	
+	
 	static Vector average(List<Vector> ps) {
 		int numVectors = ps.size();
 		Vector out = new Vector(ps.get(0).elements());
 		for (int i = 0; i < numVectors; i++) {
 			out.addInPlace(ps.get(i));
+			numberPointsAverage.incrementAndGet();
 		}
 		return out.divide(numVectors);
 	}
@@ -73,7 +81,7 @@ public class KMeans {
 				" HDFS URL: " + hdfsUrl + 
 				" numCluster: " + numClusters);
 		
-		System.setProperty("spark.cores.max", "96");
+		//System.setProperty("spark.cores.max", "96");
 		//System.setProperty("spark.default.parallelism", "48");
 		//System.setProperty("spark.storage.memoryFraction", "0.5");
 		//System.setProperty("spark.speculation" , "true");
@@ -82,7 +90,7 @@ public class KMeans {
 				sparkHome, jarFile);
 		int K = 10;
 		double convergeDist = .000001;
-		int numberPartitions = 24;
+		int numberPartitions = 12;
 		System.out.println("Using "+ numberPartitions + " partitions");
 		JavaPairRDD<String, Vector> data = sc.textFile(hdfsUrl, numberPartitions).map(
 						new PairFunction<String, String, Vector>() {
@@ -95,7 +103,7 @@ public class KMeans {
 		
 		
 		long count = data.count();
-		//System.out.println("Number of records " + count);
+		System.out.println("Number of records: " + count);
 		List<Tuple2<String, Vector>> centroidTuples = data.takeSample(false, K, 42);
 		final List<Vector> centroids = Lists.newArrayList();
 		for (Tuple2<String, Vector> t: centroidTuples) {
@@ -123,10 +131,10 @@ public class KMeans {
 							return average(ps);
 						}
 					}).collectAsMap();
-			//tempDist = 0.0;
-			//for (int i = 0; i < K; i++) {
-			//	tempDist += centroids.get(i).squaredDist(newCentroids.get(i));
-			//}
+			tempDist = 0.0;
+			for (int i = 0; i < K; i++) {
+				tempDist += centroids.get(i).squaredDist(newCentroids.get(i));
+			}
 			for (Map.Entry<Integer, Vector> t: newCentroids.entrySet()) {
 				centroids.set(t.getKey(), t.getValue());
 			}
@@ -136,6 +144,9 @@ public class KMeans {
 		}
 		long endTime = System.currentTimeMillis();
 		timings.put("Runtime", new Double((((double) (endTime-startTime))/1000.0)));
+		timings.put("Number Points Closest", numberPointsClosest.doubleValue());
+		timings.put("Number Partitions", new Double(numberPartitions));
+		timings.put("Number Points Average", numberPointsAverage.doubleValue());
 		
 //		System.out.println("Cluster with some articles:");
 //		int numArticles = 10;
