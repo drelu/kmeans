@@ -4,6 +4,7 @@ package com.drelu;
 import org.apache.hadoop.fs.shell.Count;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
+
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -11,10 +12,12 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import com.google.common.collect.Lists;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import scala.Tuple2;
+
 import org.apache.spark.api.java.*;
 import org.apache.spark.api.java.function.*;
 import org.apache.spark.util.Vector;
@@ -23,14 +26,14 @@ import org.apache.spark.util.Vector;
 
 public class KMeans {
 	
-	public static volatile AtomicInteger numberPointsClosest = new AtomicInteger(0);
-	public static volatile AtomicInteger numberPointsAverage= new AtomicInteger(0);
+	public static volatile AtomicLong numberPointsClosest = new AtomicLong(0);
+	public static volatile AtomicLong numberPointsAverage= new AtomicLong(0);
 	public static int dimensions=0;
 	
 	static int closestPoint(Vector p, List<Vector> centers) {
 		int bestIndex = 0;
 		double closest = Double.POSITIVE_INFINITY;
-		System.out.println("Processing Centroids #: " + centers.size());
+		//System.out.println("Processing Centroids #: " + centers.size());
 		for (int i = 0; i < centers.size(); i++) {
 			//System.out.println("Processing vector with a length of: " +centers.get(i).length());
 			double tempDist = p.squaredDist(centers.get(i));
@@ -38,8 +41,9 @@ public class KMeans {
 				closest = tempDist;
 				bestIndex = i;
 			}
+			numberPointsClosest.incrementAndGet();
 		}
-		numberPointsClosest.incrementAndGet();
+		
 		return bestIndex;
 	}
 	
