@@ -21,7 +21,9 @@ HDFS_INPUT="kmeans"
 HDFS_OUTPUT="kmeans/output"
 NUMBER_OF_CLUSTERS=500
 ITERATIONS=10
-CHUNKSIZE={5000:4837888, 50000:482816, 500:48376832} #96 mappers
+#CHUNKSIZE={5000:4837888, 50000:482816, 500:48376832} #96 mappers
+#CHUNKSIZE={5000:9675776, 50000:965632, 500:96753152} #48 mapper
+CHUNKSIZE={5000:19351040, 50000:1931264, 500:193506304} #24 mapper
 
 # Commands for the individual steps
 MAHOUT_VECTOR_CONVERSION_CMD="HADOOP_CLASSPATH=/data/bin/mahout-distribution-0.8/mahout-core-0.8-job.jar; hadoop jar /data/kmeans/mahout/kmeans/target/kmeans-1.0-SNAPSHOT-jar-with-dependencies.jar"
@@ -58,14 +60,14 @@ if __name__ == "__main__":
                 f.flush()
 
 		hdfs_final_path = os.path.join(HDFS_INPUT, os.path.splitext(filename)[0], "data.mvector")
-		os.system("hadoop fs -D dfs.replication=8 -Ddfs.block.size="+ str(chunk_size) + " -cp " + hdfs_path + " " + hdfs_final_path)
+		os.system("hadoop fs -D dfs.replication=4 -Ddfs.block.size="+ str(chunk_size) + " -cp " + hdfs_path + " " + hdfs_final_path)
 		os.system("hadoop fs -rm " + hdfs_path)
 
                 mahout_cmd = MAHOUT_KMEANS_CMD.substitute(input=hdfs_final_path, clusters=clusters)
                 print "Run: %s"%mahout_cmd
                 os.system(mahout_cmd)
                 end = time.time()
-                result_tuple = (repeat_id, str(os.path.splitext(filename)[0]), str(chunk_size), "KMeans", end-end_conversion, datetime.datetime.today().isoformat(), chunk_size)
+                result_tuple = (repeat_id, str(os.path.splitext(filename)[0]), str(clusters), "KMeans", end-end_conversion, datetime.datetime.today().isoformat(), chunk_size)
                 line =  ("%s;%s;%s;%s;%s;%s;%s;\n"%(result_tuple))  
                 f.write(line)
                 f.flush()

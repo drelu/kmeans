@@ -27,7 +27,7 @@ RESULT_FILE_PREFIX="kmeans-spark-java"
 HADOOP="/root/ephemeral-hdfs/bin/hadoop"
 HDFS_WORKING_DIR="/user/root/spark-kmeans"
 SPARK_HOME="/root/spark/"
-KMEANS_JAR=os.path.join(os.getcwd(), "target/scala-2.9.3/kmeans-spark-java_2.9.3-1.0.jar")
+KMEANS_JAR=os.path.join(os.getcwd(), "target/scala-2.10/kmeans-spark-java_2.10-1.0.jar")
 NUMBER_REPEATS=5
 
 
@@ -52,21 +52,24 @@ if __name__ == "__main__":
     for repeat in range(0, NUMBER_REPEATS):
       for idx, file in enumerate(FILES):
           start = time.time()
-          os.system(HADOOP + " fs -D dfs.replication=4 -put " + file + " " + HDFS_WORKING_DIR)
+          os.system(HADOOP + " fs -D dfs.replication=8 -put " + file + " " + HDFS_WORKING_DIR)
           hdfs_upload = time.time()-start
           spark_start = time.time() 
           count = file[file.find("_")+1:file.rfind("points")]
           K = NUMBER_CLUSTERS[idx]
           print "Index: " + str(idx) + " File: " + str(file) + " Points: " + str(count) + " Clusters: " + str(K) 
           os.environ["SPARK_CLASSPATH"]=KMEANS_JAR
-          cmd = (os.path.join(SPARK_HOME, "spark-class") + 
+          cmd = (os.path.join(SPARK_HOME, "bin", "spark-class") + 
           " com.drelu.KMeans " + SPARK_HOME + " " + 
           master + " " +
           KMEANS_JAR + " " +
           os.path.join(HDFS_WORKING_DIR, os.path.basename(file)) + " " +
           str(K))
           print "command: " + cmd
-          os.system(cmd)
+          rc=os.system(cmd)
+          if rc!=0:
+            print "Failed execution... Continue"
+            continue
           run_time = time.time() - spark_start
           result_tuple = (repeat, file, datetime.datetime.today().isoformat(), count, K)
           hdfs_upload_tuple = result_tuple + ("Upload Time", str(hdfs_upload))

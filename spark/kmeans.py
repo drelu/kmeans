@@ -11,10 +11,12 @@ import datetime
 
 from pyspark import SparkContext
 
-
-NUMBER_ITERATIONS=1
-FILES=["/data/kmeans/java/random_5000points.csv"] #"/Users/luckow/workspace-saga/github-projects/kmeans/java/random_500000points.csv"]
-NUMBER_CLUSTERS=[1, 1, 5000, 50000]
+NUMBER_ITERATIONS=10
+FILES=["/data/input-judy/random_1000000points_50000clusters.csv",
+       "/data/input-judy/random_10000000points_5000clusters.csv",
+       "/data/input-judy/random_100000000points_500clusters.csv"
+      ]
+NUMBER_CLUSTERS=[50000, 5000, 500]
 HEADER = ("Run", "File", "Timestamp", "Number_Points", "Number_Clusters" "Time_Type", "Time")
 HEADER_CSV = ("%s;%s;%s;%s;%s;%s;\n"%HEADER)
 RESULT_DIR="results"
@@ -76,7 +78,7 @@ if __name__ == "__main__":
         spark_load = time.time() 
         print "Index: " + str(idx) + " File: " + str(file)
         K = NUMBER_CLUSTERS[idx]
-        lines = sc.textFile("hdfs://"+masterHostname+":9000/" + HDFS_WORKING_DIR + "/" + os.path.basename(file))
+        lines = sc.textFile("hdfs://"+masterHostname+":9000/" + HDFS_WORKING_DIR + "/" + os.path.basename(file), 24)
         data = lines.map(lambda x: (x.split(",")[0], parseVector(x.split(",")[0:3]))).cache()
         count = data.count()
         print str(data.first())
