@@ -93,7 +93,6 @@ public class KMeans {
 		//System.setProperty("spark.executor.memory", "1024m");
 		JavaSparkContext sc = new JavaSparkContext(sparkUrl, "JavaKMeans",
 				sparkHome, jarFile);
-		int K = numClusters;
 		double convergeDist = .000001;
 		int numberPartitions = 24;
 		System.out.println("Using "+ numberPartitions + " partitions");
@@ -109,7 +108,7 @@ public class KMeans {
 		
 		long count = data.count();
 		System.out.println("Number of records: " + count);
-		List<Tuple2<String, Vector>> centroidTuples = data.takeSample(false, K, 42);
+		List<Tuple2<String, Vector>> centroidTuples = data.takeSample(false, numClusters, 42);
 		final List<Vector> centroids = Lists.newArrayList();
 		for (Tuple2<String, Vector> t: centroidTuples) {
 			centroids.add(t._2());
@@ -137,9 +136,9 @@ public class KMeans {
 						}
 					}).collectAsMap();
 			tempDist = 0.0;
-			for (int i = 0; i < K; i++) {
-				tempDist += centroids.get(i).squaredDist(newCentroids.get(i));
-			}
+			//for (int i = 0; i < numClusters; i++) {
+			//	tempDist += centroids.get(i).squaredDist(newCentroids.get(i));
+			//}
 			for (Map.Entry<Integer, Vector> t: newCentroids.entrySet()) {
 				centroids.set(t.getKey(), t.getValue());
 			}
