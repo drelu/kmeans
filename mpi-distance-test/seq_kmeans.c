@@ -56,14 +56,14 @@ int find_nearest_cluster(int     numClusters, /* no. clusters */
     index    = 0;
     min_dist = euclid_dist_2(numCoords, object, clusters[0]);
 
-    for (i=1; i<numClusters; i++) {
-        dist = euclid_dist_2(numCoords, object, clusters[i]);
-        /* no need square root */
-        if (dist < min_dist) { /* find the min and its array index */
-            min_dist = dist;
-            index    = i;
-        }
-    }
+    //for (i=1; i<numClusters; i++) {
+    //    dist = euclid_dist_2(numCoords, object, clusters[i]);
+    //    /* no need square root */
+    //    if (dist < min_dist) { /* find the min and its array index */
+    //        min_dist = dist;
+    //        index    = i;
+    //    }
+    //}
     return(index);
 }
 

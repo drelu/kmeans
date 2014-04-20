@@ -20,6 +20,7 @@ FILES=["/data/input-judy/random_100000000points_500clusters.csv",
 #       "/data/input-judy/random_10000000points_5000clusters.csv"    
 #       ] 
 NUMBER_CLUSTERS=[500, 50000, 5000]
+#NUMBER_CLUSTERS=[50000]
 HEADER = ("Run", "File", "Timestamp", "Number_Points", "Number_Clusters" "Time_Type", "Time")
 HEADER_CSV = ("%s;%s;%s;%s;%s;%s;\n"%HEADER)
 RESULT_DIR="results"
